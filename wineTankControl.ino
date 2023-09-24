@@ -5,8 +5,8 @@
 #define ONE_WIRE_BUS 2 // The one-wire bus pin
 #define RELAY_PINS              \
     {                           \
-        3, 4, 5, 6, 7, 8, 9, 10 \
-    } // Example relay pins
+        23, 1, 3, 19, 25, 18, 5, 0 \
+    } // Example2 relay pins
 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
