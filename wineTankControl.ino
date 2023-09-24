@@ -3,8 +3,8 @@
 #include <EasyNextionLibrary.h>
 
 #define ONE_WIRE_BUS 3 // The one-wire bus pin
-#define RELAY_PINS              \
-    {                           \
+#define RELAY_PINS                 \
+    {                              \
         23, 1, 3, 19, 25, 18, 5, 0 \
     } // Example2 relay pins
 
@@ -38,6 +38,7 @@ void loop()
     for (int i = 0; i < numRelays; i++)
     {
         desiredTemperatures[i] = myNex.readNumber("t" + String(i + 1) + "1_poz.val");
+        delay(300);
     }
 
     sensors.requestTemperatures(); // Request temperature readings
@@ -67,6 +68,7 @@ void loop()
         {
             digitalWrite(relayPins[i], LOW);
         }
+        delay(300);
     }
 
     delay(1000); // Delay for a second before reading temperatures again
