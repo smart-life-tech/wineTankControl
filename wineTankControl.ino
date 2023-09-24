@@ -30,6 +30,8 @@ void setup()
     }
 
     myNex.begin();
+    Serial.println("code started !!!");
+    delay(1000);
 }
 
 void loop()
