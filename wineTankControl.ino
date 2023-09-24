@@ -2,7 +2,7 @@
 #include <DallasTemperature.h>
 #include <EasyNextionLibrary.h>
 
-#define ONE_WIRE_BUS 2 // The one-wire bus pin
+#define ONE_WIRE_BUS 3 // The one-wire bus pin
 #define RELAY_PINS              \
     {                           \
         23, 1, 3, 19, 25, 18, 5, 0 \
