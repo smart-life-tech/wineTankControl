@@ -37,7 +37,7 @@ void loop()
     // Check for commands from the Nextion display and update desired temperatures
     for (int i = 0; i < numRelays; i++)
     {
-        desiredTemperatures[i] = myNex.readNumber("tank" + String(i + 1) + ".val");
+        desiredTemperatures[i] = myNex.readNumber("t" + String(i + 1) + "1_poz.val");
     }
 
     sensors.requestTemperatures(); // Request temperature readings
@@ -48,7 +48,7 @@ void loop()
         currentTankTemperatures[i] = currentTemperature;
 
         // Update the current temperature display on Nextion for each tank
-        myNex.writeNum("tank" + String(i + 1) + "temp.val", currentTemperature);
+        myNex.writeNum("t" + String(i + 1) + "_akt.val", currentTemperature);
 
         Serial.print("Tank ");
         Serial.print(i + 1);
