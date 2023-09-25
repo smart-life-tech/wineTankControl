@@ -28,7 +28,6 @@ DeviceAddress tank6 = {0x28, 0x60, 0x67, 0xCE, 0x04, 0x00, 0x00, 0x2F};
 DeviceAddress tank7 = {0x28, 0x1F, 0xBD, 0xCB, 0x04, 0x00, 0x00, 0xF1};
 DeviceAddress tank8 = {0x28, 0x60, 0x67, 0xCE, 0x04, 0x00, 0x00, 0x2F};
 // promenne teploty
-float teplota[numberOfSensors];
 unsigned long casCteniTeplot; // cas posledniho cteni
 boolean povolCteniTeplot = false;
 byte ID_teploty;                          // ID pro aktualizaci teploty v pripade nastaveni teplot
@@ -90,17 +89,17 @@ void setup()
         Serial.println("Unable to find address for Device 0");
     if (!sensors.getAddress(tank2, 1))
         Serial.println("Unable to find address for Device 1");
-    if (!sensors.getAddress(tank1, 2))
+    if (!sensors.getAddress(tank3, 2))
         Serial.println("Unable to find address for Device 2");
-    if (!sensors.getAddress(tank2, 3))
+    if (!sensors.getAddress(tank4, 3))
         Serial.println("Unable to find address for Device 3");
-    if (!sensors.getAddress(tank1, 4))
+    if (!sensors.getAddress(tank5, 4))
         Serial.println("Unable to find address for Device 4");
-    if (!sensors.getAddress(tank2, 5))
+    if (!sensors.getAddress(tank6, 5))
         Serial.println("Unable to find address for Device 5");
-    if (!sensors.getAddress(tank1, 6))
+    if (!sensors.getAddress(tank7, 6))
         Serial.println("Unable to find address for Device 6");
-    if (!sensors.getAddress(tank2, 7))
+    if (!sensors.getAddress(tank8, 7))
         Serial.println("Unable to find address for Device 7");
 
     for (int i = 0; i < numRelays; i++)
