@@ -134,15 +134,15 @@ void setup()
   if (!sensors.getAddress(tank8, 7))
     Serial.println("Unable to find address for Device 7");
   printAll();
+
+  myNex.begin();
+  Serial.println("code started !!!");
+  delay(1000);
   for (int i = 0; i < numRelays; i++)
   {
     pinMode(relayPins[i], OUTPUT);
     digitalWrite(relayPins[i], LOW);
   }
-
-  myNex.begin();
-  Serial.println("code started !!!");
-  delay(1000);
 }
 
 void loop()
