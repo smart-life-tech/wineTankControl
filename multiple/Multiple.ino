@@ -13,7 +13,7 @@ OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
 // arrays to hold device addresses
-//DeviceAddress insideThermometer, outsideThermometer;
+DeviceAddress insideThermometer, outsideThermometer;
 
 // Assign address manually. The addresses below will need to be changed
 // to valid device addresses on your bus. Device address can be retrieved
@@ -21,8 +21,8 @@ DallasTemperature sensors(&oneWire);
 // sensors.getAddress(deviceAddress, index)
 // DeviceAddress insideThermometer = { 0x28, 0x1D, 0x39, 0x31, 0x2, 0x0, 0x0, 0xF0 };
 // DeviceAddress outsideThermometer   = { 0x28, 0x3F, 0x1C, 0x31, 0x2, 0x0, 0x0, 0x2 };
-DeviceAddress insideThermometer = {0x28, 0xFF, 0xE0, 0x19, 0x2, 0x17, 0x4, 0x95}; // 28 FF E0 19 2 17 4 95
-DeviceAddress outsideThermometer = {0x28, 0xFF, 0x2A, 0xA6, 0x1, 0x17, 0x4, 0xE};  // 28 FF 2A A6 1 17 4 E
+//DeviceAddress insideThermometer = {0x28, 0xFF, 0xE0, 0x19, 0x2, 0x17, 0x4, 0x95}; // 28 FF E0 19 2 17 4 95
+//DeviceAddress outsideThermometer = {0x28, 0xFF, 0x2A, 0xA6, 0x1, 0x17, 0x4, 0xE};  // 28 FF 2A A6 1 17 4 E
 void setup(void)
 {
   // start serial port
