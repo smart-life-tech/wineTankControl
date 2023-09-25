@@ -1,8 +1,8 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <EasyNextionLibrary.h>
-
-#define ONE_WIRE_BUS 3 // The one-wire bus pin
+#include <EEPROM.h>    // knihovna pro zapis do pameti eeprom
+#define ONE_WIRE_BUS 4 // The one-wire bus pin
 #define RELAY_PINS                 \
     {                              \
         23, 1, 3, 19, 25, 18, 5, 0 \
@@ -11,17 +11,97 @@
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
+int numberOfSensors = 8;
 const int numRelays = 8;
 int relayPins[numRelays] = RELAY_PINS;
 float desiredTemperatures[numRelays];     // Array to store desired temperatures for each tank
 float currentTankTemperatures[numRelays]; // Array to store current temperatures for each tank
 
 EasyNex myNex(Serial2); // Use the correct Serial port and baud rate
-
+// Adresy cidel
+DeviceAddress tank1 = {0x28, 0xFF, 0xE0, 0x19, 0x2, 0x17, 0x4, 0x95}; // 28 FF E0 19 2 17 4 95
+DeviceAddress tank2 = {0x28, 0xFF, 0x2A, 0xA6, 0x1, 0x17, 0x4, 0xE};  // 28 FF 2A A6 1 17 4 E
+DeviceAddress tank3 = {0x28, 0x1F, 0xBD, 0xCB, 0x04, 0x00, 0x00, 0xF1};
+DeviceAddress tank4 = {0x28, 0x60, 0x67, 0xCE, 0x04, 0x00, 0x00, 0x2F};
+DeviceAddress tank5 = {0x28, 0x1F, 0xBD, 0xCB, 0x04, 0x00, 0x00, 0xF1};
+DeviceAddress tank6 = {0x28, 0x60, 0x67, 0xCE, 0x04, 0x00, 0x00, 0x2F};
+DeviceAddress tank7 = {0x28, 0x1F, 0xBD, 0xCB, 0x04, 0x00, 0x00, 0xF1};
+DeviceAddress tank8 = {0x28, 0x60, 0x67, 0xCE, 0x04, 0x00, 0x00, 0x2F};
+// promenne teploty
+float teplota[numberOfSensors];
+unsigned long casCteniTeplot; // cas posledniho cteni
+boolean povolCteniTeplot = false;
+byte ID_teploty;                          // ID pro aktualizaci teploty v pripade nastaveni teplot
+unsigned long prodlevaCteniTeplot = 5000; // nastaveni periody cteni teploty
+byte resolutionDS = 12;                   // nastaveni rozliseni cidla
+//------------------------------------------------------------------
+// pole adres cidel DS 18B20 - 8 pozic dalsi volna adresa 624
+// const int cidlaDS_i[] = {560, 568, 576, 584, 592, 600, 608, 616};
+const int cidlaDS_i = 560; // prvni adresa EEPROM pro zapis adres cidel
+void hledaniDS18B20()
+{
+    byte address[8];
+    byte id;
+    oneWire.reset_search(); // resetuj hledani
+    if (oneWire.search(address))
+    { // hledej adresy
+        for (id = 0; id < numberOfSensors; id++)
+        { // zapis data do displeje
+            String stringText;
+            for (byte i = 0; i < 8; i++)
+            { // precti a uloz adresy
+                EEPROM.write(cidlaDS_i + (id * 8) + i, address[i]);
+                stringText += address[i], DEC;
+                if (i < 8 - 1)
+                    stringText += ",";
+            }
+            Serial.println("Cidlo " + (String)(id + 1) + ": " + stringText);
+            if (!oneWire.search(address))
+            {
+                oneWire.reset_search();
+                Serial.println(F("Zadne dalsi cidlo nenalezeno"));
+                break;
+            }
+        }
+        Serial.println("Nalezeno " + (String)(id + 1) + " cidel.");
+        Serial.println();
+    }
+}
 void setup()
 {
     Serial.begin(9600);
+    Serial.println("Dallas Temperature IC Control Library Demo");
     sensors.begin();
+    // locate devices on the bus
+    Serial.print("Locating devices...");
+    Serial.print("Found ");
+    Serial.print(sensors.getDeviceCount(), DEC);
+    Serial.println(" devices.");
+
+    // report parasite power requirements
+    Serial.print("Parasite power is: ");
+    if (sensors.isParasitePowerMode())
+        Serial.println("ON");
+    else
+        Serial.println("OFF");
+    hledaniDS18B20();
+    // method 1: by index
+    if (!sensors.getAddress(tank1, 0))
+        Serial.println("Unable to find address for Device 0");
+    if (!sensors.getAddress(tank2, 1))
+        Serial.println("Unable to find address for Device 1");
+    if (!sensors.getAddress(tank1, 2))
+        Serial.println("Unable to find address for Device 2");
+    if (!sensors.getAddress(tank2, 3))
+        Serial.println("Unable to find address for Device 3");
+    if (!sensors.getAddress(tank1, 4))
+        Serial.println("Unable to find address for Device 4");
+    if (!sensors.getAddress(tank2, 5))
+        Serial.println("Unable to find address for Device 5");
+    if (!sensors.getAddress(tank1, 6))
+        Serial.println("Unable to find address for Device 6");
+    if (!sensors.getAddress(tank2, 7))
+        Serial.println("Unable to find address for Device 7");
 
     for (int i = 0; i < numRelays; i++)
     {
