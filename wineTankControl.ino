@@ -5,7 +5,7 @@
 #define ONE_WIRE_BUS 4 // The one-wire bus pin
 #define RELAY_PINS             \
   {                            \
-    23, 1, 3, 19, 25, 18, 5, 0 \
+    23, 23, 23, 19, 25, 23, 5, 18 \
   } // Example2 relay pins
 
 OneWire oneWire(ONE_WIRE_BUS);
