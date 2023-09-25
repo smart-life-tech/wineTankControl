@@ -13,7 +13,7 @@ OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
 // arrays to hold device addresses
-DeviceAddress insideThermometer, outsideThermometer;
+//DeviceAddress insideThermometer, outsideThermometer;
 
 // Assign address manually. The addresses below will need to be changed
 // to valid device addresses on your bus. Device address can be retrieved
