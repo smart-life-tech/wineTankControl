@@ -5,7 +5,7 @@
 #define ONE_WIRE_BUS 4 // The one-wire bus pin
 #define RELAY_PINS             \
   {                            \
-    10, 5, 18, 25, 19, 18, 1, 18 \
+    0, 5, 18, 25, 19, 3, 18, 18 \
   } // Example2 relay pins
 
 OneWire oneWire(ONE_WIRE_BUS);
@@ -140,7 +140,9 @@ void setup()
   delay(1000);
   for (int i = 0; i < numRelays; i++)
   {
+    Serial.println(i);
     pinMode(relayPins[i], OUTPUT);
+    Serial.println(i);
     digitalWrite(relayPins[i], LOW);
   }
 }
