@@ -15,7 +15,7 @@ int numberOfSensors = 8;
 const int numRelays = 8;
 int relayPins[numRelays] = RELAY_PINS;
 float desiredTemperatures[numRelays];     // Array to store desired temperatures for each tank
-float currentTankTemperatures[numRelays]; // Array to store current temperatures for each tank
+int currentTankTemperatures[numRelays]; // Array to store current temperatures for each tank
 
 EasyNex myNex(Serial2); // Use the correct Serial port and baud rate
 // Adresy cidel
@@ -142,7 +142,7 @@ void setup()
   {
     Serial.println(i);
     pinMode(relayPins[i], OUTPUT);
-    Serial.println(i);
+   // Serial.println(i);
     digitalWrite(relayPins[i], LOW);
   }
 }
@@ -160,11 +160,11 @@ void loop()
 
   for (int i = 0; i < numRelays; i++)
   {
-    float currentTemperature = sensors.getTempCByIndex(i);
-    currentTankTemperatures[i] = int(currentTemperature);
+    int currentTemperature = sensors.getTempCByIndex(i);
+    currentTankTemperatures[i] = (currentTemperature);
 
     // Update the current temperature display on Nextion for each tank
-    myNex.writeStr("t" + String(i + 1) + "_akt.val", String(currentTemperature));
+    myNex.writeNum("t" + String(i + 1) + "_akt.val", (currentTemperature));
 
     Serial.print("Tank ");
     Serial.print(i + 1);
