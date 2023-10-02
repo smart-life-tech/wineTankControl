@@ -3,8 +3,8 @@
 #include <EasyNextionLibrary.h>
 #include <EEPROM.h>    // knihovna pro zapis do pameti eeprom
 #define ONE_WIRE_BUS 4 // The one-wire bus pin
-#define RELAY_PINS             \
-  {                            \
+#define RELAY_PINS              \
+  {                             \
     0, 5, 18, 25, 19, 3, 18, 18 \
   } // Example2 relay pins
 
@@ -161,10 +161,10 @@ void loop()
   for (int i = 0; i < numRelays; i++)
   {
     float currentTemperature = sensors.getTempCByIndex(i);
-    currentTankTemperatures[i] = currentTemperature;
+    currentTankTemperatures[i] = int(currentTemperature);
 
     // Update the current temperature display on Nextion for each tank
-    myNex.writeNum("t" + String(i + 1) + "_akt.val", currentTemperature);
+    myNex.writeStr("t" + String(i + 1) + "_akt.val", String(currentTemperature));
 
     Serial.print("Tank ");
     Serial.print(i + 1);
