@@ -152,7 +152,7 @@ void loop()
   // Check for commands from the Nextion display and update desired temperatures
   for (int i = 0; i < numRelays; i++)
   {
-    desiredTemperatures[i] = myNex.readNumber("t" + String(i + 1) + "1_poz.val");
+    desiredTemperatures[i] = myNex.readNumber("t" + String(i + 1) + "_poz.val");
     delay(300);
   }
 
