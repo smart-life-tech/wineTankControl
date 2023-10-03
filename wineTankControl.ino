@@ -14,8 +14,9 @@ DallasTemperature sensors(&oneWire);
 int numberOfSensors = 8;
 const int numRelays = 8;
 int relayPins[numRelays] = RELAY_PINS;
-float desiredTemperatures[numRelays];     // Array to store desired temperatures for each tank
+float desiredTemperatures[numRelays];   // Array to store desired temperatures for each tank
 int currentTankTemperatures[numRelays]; // Array to store current temperatures for each tank
+int relayMode[numRelays];
 
 EasyNex myNex(Serial2); // Use the correct Serial port and baud rate
 // Adresy cidel
@@ -142,7 +143,7 @@ void setup()
   {
     Serial.println(i);
     pinMode(relayPins[i], OUTPUT);
-   // Serial.println(i);
+    // Serial.println(i);
     digitalWrite(relayPins[i], LOW);
   }
 }
@@ -155,7 +156,13 @@ void loop()
     desiredTemperatures[i] = myNex.readNumber("t" + String(i + 1) + "_poz.val");
     delay(300);
   }
-
+  for (int i = 0; i < numRelays; i++)
+  {
+    relayMode[i] = myNex.readNumber("auto" + String(i + 1) + ".val");
+    Serial.print("relayMode " + String(i));
+    Serial.println(relayMode[i]);
+    delay(300);
+  }
   sensors.requestTemperatures(); // Request temperature readings
 
   for (int i = 0; i < numRelays; i++)
@@ -174,7 +181,7 @@ void loop()
     Serial.print(desiredTemperatures[i]);
     Serial.println("°C");
 
-    if (currentTemperature > desiredTemperatures[i])
+    if (currentTemperature > desiredTemperatures[i] && relayMode[i] == 10) // 10 = automatic
     {
       // Temperature exceeds desired, turn on the relay for cooling or other actions
       digitalWrite(relayPins[i], HIGH);
@@ -184,6 +191,14 @@ void loop()
       digitalWrite(relayPins[i], LOW);
     }
     delay(300);
+    if (relayMode[i] == 20)// manual mode
+    {
+      digitalWrite(relayPins[i], HIGH);
+    }
+    else if (relayMode[i] == 30)// nothing set relay off
+    {
+      digitalWrite(relayPins[i], LOW);
+    }
   }
 
   delay(1000); // Delay for a second before reading temperatures again
