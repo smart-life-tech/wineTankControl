@@ -96,25 +96,6 @@ void setup()
     Serial.println("ON");
   else
     Serial.println("OFF");
-  /*
-    oneWire.reset_search();
-    //assigns the first address found to tank1
-    if (!oneWire.search(tank1)) Serial.println("Unable to find address for tank1");
-    //assigns the seconds address found to tank2
-    if (!oneWire.search(tank2)) Serial.println("Unable to find address for tank2");
-    //assigns the first address found to tank1
-    if (!oneWire.search(tank3)) Serial.println("Unable to find address for tank3");
-    //assigns the seconds address found to tank2
-    if (!oneWire.search(tank4)) Serial.println("Unable to find address for tank4");
-    //assigns the first address found to tank1
-    if (!oneWire.search(tank5)) Serial.println("Unable to find address for tank5");
-    //assigns the seconds address found to tank2
-    if (!oneWire.search(tank6)) Serial.println("Unable to find address for tank6");
-    //assigns the first address found to tank1
-    if (!oneWire.search(tank7)) Serial.println("Unable to find address for tank7");
-    //assigns the seconds address found to tank2
-    if (!oneWire.search(tank8)) Serial.println("Unable to find address for tank8");
-    */
 
   // hledaniDS18B20();
   //  method 1: by index
@@ -134,7 +115,7 @@ void setup()
     Serial.println("Unable to find address for Device 6");
   if (!sensors.getAddress(tank8, 7))
     Serial.println("Unable to find address for Device 7");
-  //printAll();
+  // printAll();
 
   myNex.begin();
   Serial.println("code started !!!");
@@ -146,6 +127,10 @@ void setup()
     // Serial.println(i);
     digitalWrite(relayPins[i], LOW);
   }
+  for (int i = 0; i < numRelays; i++)
+  {
+    desiredTemperatures[i] = EEPROM.read(i);
+  }
 }
 
 void loop()
@@ -153,13 +138,18 @@ void loop()
   // Check for commands from the Nextion display and update desired temperatures
   for (int i = 0; i < numRelays; i++)
   {
-    desiredTemperatures[i] = myNex.readNumber("t" + String(i + 1) + "_poz.val");
+    int readTemp = myNex.readNumber("t" + String(i + 1) + "_poz.val");
+    if (readTemp < 500)
+    {
+      desiredTemperatures[i] = readTemp;
+      EEPROM.update(desiredTemperatures[i], i);
+    }
     delay(300);
   }
   for (int i = 0; i < numRelays; i++)
   {
     relayMode[i] = myNex.readNumber("auto" + String(i + 1) + ".val");
-    Serial.print("relayMode " + String(i));
+    Serial.print("relayMode " + String(i)) + " ";
     Serial.println(relayMode[i]);
     delay(300);
   }
@@ -175,9 +165,9 @@ void loop()
 
     Serial.print("Tank ");
     Serial.print(i + 1);
-    Serial.print(" - Current Temperature: ");
+    Serial.print(" - Current Temperature v5: ");
     Serial.print(currentTemperature);
-    Serial.print("°C, Desired Temperature: ");
+    Serial.print("°C, Desired Temperature v5: ");
     Serial.print(desiredTemperatures[i]);
     Serial.println("°C");
 
@@ -191,11 +181,11 @@ void loop()
       digitalWrite(relayPins[i], LOW);
     }
     delay(300);
-    if (relayMode[i] == 20)// manual mode
+    if (relayMode[i] == 20) // manual mode
     {
       digitalWrite(relayPins[i], HIGH);
     }
-    else if (relayMode[i] == 30)// nothing set relay off
+    else if (relayMode[i] == 30) // nothing set relay off
     {
       digitalWrite(relayPins[i], LOW);
     }
