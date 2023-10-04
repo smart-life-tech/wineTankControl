@@ -134,7 +134,7 @@ void setup()
     Serial.println("Unable to find address for Device 6");
   if (!sensors.getAddress(tank8, 7))
     Serial.println("Unable to find address for Device 7");
-  printAll();
+  //printAll();
 
   myNex.begin();
   Serial.println("code started !!!");
