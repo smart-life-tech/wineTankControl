@@ -13,6 +13,7 @@ DallasTemperature sensors(&oneWire);
 
 int numberOfSensors = 8;
 const int numRelays = 8;
+
 int relayPins[numRelays] = RELAY_PINS;
 float desiredTemperatures[numRelays];   // Array to store desired temperatures for each tank
 int currentTankTemperatures[numRelays]; // Array to store current temperatures for each tank
@@ -142,7 +143,8 @@ void loop()
     if (readTemp < 500)
     {
       desiredTemperatures[i] = readTemp;
-      EEPROM.update(desiredTemperatures[i], i);
+      if (readTemp != EEPROM.read(i))
+        EEPROM.write(i, desiredTemperatures[i]);
     }
     delay(300);
   }
@@ -190,6 +192,6 @@ void loop()
       digitalWrite(relayPins[i], LOW);
     }
   }
-
+  // EEPROM.commit();
   delay(1000); // Delay for a second before reading temperatures again
 }
