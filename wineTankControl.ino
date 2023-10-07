@@ -192,6 +192,6 @@ void loop()
       digitalWrite(relayPins[i], LOW);
     }
   }
-  // EEPROM.commit();
+  // EEPROM.commit();/ only for the esp
   delay(1000); // Delay for a second before reading temperatures again
 }
