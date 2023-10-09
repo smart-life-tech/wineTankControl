@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Page</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <h1>Welcome to the User Page!</h1>
+  
+  <h2>Set Temperatures:</h2>
+  <ul id="set_temperatures">
+    <li id="set_temperature1">Sensor 1 Set Temperature: <span id="set_temperature_value1">N/A</span></li>
+    <li id="set_temperature2">Sensor 2 Set Temperature: <span id="set_temperature_value2">N/A</span></li>
+    <li id="set_temperature3">Sensor 3 Set Temperature: <span id="set_temperature_value3">N/A</span></li>
+    <li id="set_temperature4">Sensor 4 Set Temperature: <span id="set_temperature_value4">N/A</span></li>
+    <li id="set_temperature5">Sensor 5 Set Temperature: <span id="set_temperature_value5">N/A</span></li>
+    <li id="set_temperature6">Sensor 6 Set Temperature: <span id="set_temperature_value6">N/A</span></li>
+    <li id="set_temperature7">Sensor 7 Set Temperature: <span id="set_temperature_value7">N/A</span></li>
+    <li id="set_temperature8">Sensor 8 Set Temperature: <span id="set_temperature_value8">N/A</span></li>
+  </ul>
+
+  <h2>Sensor Data:</h2>
+  <ul id="sensor_data">
+    <li id="sensor1">Sensor 1: <span id="sensor1_value">N/A</span></li>
+    <li id="sensor2">Sensor 2: <span id="sensor2_value">N/A</span></li>
+    <li id="sensor3">Sensor 3: <span id="sensor3_value">N/A</span></li>
+    <li id="sensor4">Sensor 4: <span id="sensor4_value">N/A</span></li>
+    <li id="sensor5">Sensor 5: <span id="sensor5_value">N/A</span></li>
+    <li id="sensor6">Sensor 6: <span id="sensor6_value">N/A</span></li>
+    <li id="sensor7">Sensor 7: <span id="sensor7_value">N/A</span></li>
+    <li id="sensor8">Sensor 8: <span id="sensor8_value">N/A</span></li>
+  </ul>
+
+  <script>
+    // Simulated set temperatures (replace with actual data)
+    // Function to fetch sensor data
+    function fetchSensorData() {
+      fetch('/updateData')
+        .then(response => response.json())
+        .then(data => {
+          // Update the sensor data display
+          const sensorDataElement = document.getElementById("sensor_data");
+          sensorDataElement.innerHTML = ''; // Clear previous data
+          for (const sensor in data) {
+            const listItem = document.createElement("li");
+            listItem.textContent = `${sensor}: ${data[sensor]}`;
+            sensorDataElement.appendChild(listItem);
+          }
+        })
+        .catch(error => console.error('Error fetching sensor data:', error));
+    }
+
+    // Fetch sensor data initially
+    fetchSensorData();
+
+    // Fetch sensor data periodically every 5 seconds
+    setInterval(fetchSensorData, 5000);
+    const setTemperatures = {
+      sensor1: "25°C",
+      sensor2: "26°C",
+      sensor3: "24°C",
+      sensor4: "27°C",
+      sensor5: "23°C",
+      sensor6: "25.5°C",
+      sensor7: "26.5°C",
+      sensor8: "24.5°C"
+    };
+
+    // Display set temperatures
+    for (const sensor in setTemperatures) {
+      const setTemperatureValue = setTemperatures[sensor];
+      const setTemperatureValueElement = document.getElementById(`set_temperature_value${sensor.slice(-1)}`);
+      if (setTemperatureValueElement) {
+        setTemperatureValueElement.textContent = setTemperatureValue;
+      }
+    }
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+/* Common styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  
+  h1, h2 {
+    color: #333;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  li {
+    margin-bottom: 10px;
+  }
+  
+  /* Styles for user.html */
+  #set_temperatures {
+    margin-bottom: 20px;
+  }
+  
+  /* Styles for admin.html */
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 8px;
+  }
+  
+  .form-group button {
+    padding: 8px 15px;
+  }
+  
+  /* Add more specific styles for your pages if needed */
+  
