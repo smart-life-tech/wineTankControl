@@ -99,11 +99,15 @@ void setup()
     // Set up server handlers to read and write files
     server.on("/html", HTTP_GET, [](AsyncWebServerRequest *request)
               { request->send(SPIFFS, "/login.html", "text/html"); });
-    server.on("/setAddresses", HTTP_POST, handleSetAddresses);
-    // Handle file write request
-    // Serve the User Page
+                  // Serve the User Page
     server.on("/user", HTTP_GET, [](AsyncWebServerRequest *request)
               { request->send(SPIFFS, "/user.html", "text/html"); });
+                  // Serve the User Page
+    server.on("/user", HTTP_GET, [](AsyncWebServerRequest *request)
+              { request->send(SPIFFS, "/admin.html", "text/html"); });
+    server.on("/setAddresses", HTTP_POST, handleSetAddresses);
+    // Handle file write request
+
     server.on("/write", HTTP_POST, []()
               {
     String content = server.arg("content");

@@ -55,6 +55,7 @@
       xhr.open("POST", "/setAddresses", true);
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
       xhr.send(`sensor1=${sensor1}&sensor2=${sensor2}&sensor3=${sensor3}&sensor4=${sensor4}&sensor5=${sensor5}&sensor6=${sensor6}&sensor7=${sensor7}&sensor8=${sensor8}`);
+      xhr.open("POST", "admin.html", true);
     }
   </script>
 </body>
