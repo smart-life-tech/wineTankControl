@@ -254,6 +254,7 @@ String processor(const String &var)
 
 void setup()
 {
+    
     Serial.begin(115200);
     Serial.println("Dallas Temperature IC Control Library Demo");
     sensors.begin();
@@ -320,8 +321,9 @@ void setup()
  */
     bool res;
     AsyncWiFiManager wifiManager(&server, &dns);
+    wifiManager.resetSettings();
     // wifiManager.setAPConfig(IPAddress(10, 0, 1, 1), IPAddress(10, 0, 1, 1), IPAddress(255, 255, 255, 0));
-    String macAdd = WiFi.macAddress();
+    String macAdd = WiFi.localIP().toString();
     // WIFI_MANAGER_STATION_NAME = macAdd;
     // char  * apNames = macAdd.c_str();
     char apNames[30];
