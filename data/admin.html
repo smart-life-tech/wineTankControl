@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Admin Page</title>
   <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
+
 <body>
   <h1>Welcome to the Admin Page!</h1>
   <h2>Set Temperature DS18B20 Addresses:</h2>
@@ -24,10 +26,9 @@
     <input type="text" id="sensor7" name="sensor7"><br>
     <label for="sensor8">Sensor 8 Address:</label>
     <input type="text" id="sensor8" name="sensor8"><br>
-
     <input type="submit" value="Set Addresses">
   </form>
-
+  <button onclick="loadLocalPage" id="loadPageButton">Login </button>
   <script>
     // Function to handle form submission and send the addresses to the ESP32
     function handleFormSubmission(event) {
@@ -43,7 +44,7 @@
 
       // Send the addresses to the ESP32
       const xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = function() {
+      xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
           if (xhr.status === 200) {
             alert("Sensor addresses set successfully!");
@@ -57,6 +58,16 @@
       xhr.send(`sensor1=${sensor1}&sensor2=${sensor2}&sensor3=${sensor3}&sensor4=${sensor4}&sensor5=${sensor5}&sensor6=${sensor6}&sensor7=${sensor7}&sensor8=${sensor8}`);
       xhr.open("POST", "admin.html", true);
     }
+
+    function loadLocalPage() {
+      // Change the URL to the path of your local page
+      window.location.href = "/";
+    }
+
+    // Event listener to trigger the function when the button is clicked
+    document.getElementById('loadPageButton').addEventListener('click', loadLocalPage);
+
   </script>
 </body>
+
 </html>

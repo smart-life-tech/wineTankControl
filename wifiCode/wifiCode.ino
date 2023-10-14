@@ -91,6 +91,7 @@ void handleFileWrite(String path, String content)
 
 void setup()
 {
+    WiFi.localIP();
     // Initialize SPIFFS and connect to WiFi
     server.on("/updateData", HTTP_GET, handleUpdateData);
     server.on("/getIpAddress", HTTP_GET, handleGetIPAddress);
@@ -99,10 +100,10 @@ void setup()
     // Set up server handlers to read and write files
     server.on("/html", HTTP_GET, [](AsyncWebServerRequest *request)
               { request->send(SPIFFS, "/login.html", "text/html"); });
-                  // Serve the User Page
+    // Serve the User Page
     server.on("/user", HTTP_GET, [](AsyncWebServerRequest *request)
               { request->send(SPIFFS, "/user.html", "text/html"); });
-                  // Serve the User Page
+    // Serve the User Page
     server.on("/user", HTTP_GET, [](AsyncWebServerRequest *request)
               { request->send(SPIFFS, "/admin.html", "text/html"); });
     server.on("/setAddresses", HTTP_POST, handleSetAddresses);

@@ -42,4 +42,12 @@ body {
   }
   
   /* Add more specific styles for your pages if needed */
+  #logo-container {
+    max-width: 50px; /* Adjust the width as needed */
+  }
+  
+  #logo-container img {
+    width: 50%; /* Make sure the logo image fills its container */
+    height: auto; /* Maintain the aspect ratio */
+  }
   

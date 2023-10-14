@@ -7,6 +7,8 @@
   {                             \
     0, 5, 18, 25, 19, 3, 18, 18 \
   } // Example2 relay pins
+#define IO_REG_TYPE uint32_t
+#define IO_REG_BASE_ADDR 0x3FF00000
 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);

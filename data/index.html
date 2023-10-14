@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
-
+    <header>
+        <div id="logo-container">
+          <img src="https://www.onlinelogomaker.com/blog/wp-content/uploads/2017/08/heating-logo.jpg" alt="Logo">
+        </div>
+      </header>
 <head>
     <title>Login</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
@@ -27,7 +31,7 @@
             // Check if it's an admin or user
             if (password === "adminpassword") {
                 window.location.href = "admin.html";
-            } else if (password === "userpassword") {
+            } else if (password === "user") {
                 window.location.href = "user.html";
             } else {
                 alert("Invalid credentials. Please try again.");

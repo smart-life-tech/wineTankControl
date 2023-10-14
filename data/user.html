@@ -1,80 +1,321 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>User Page</title>
-  <link rel="stylesheet" type="text/css" href="styles.css">
-</head>
-<body>
-  <h1>Welcome to the User Page!</h1>
-  
-  <h2>Set Temperatures:</h2>
-  <ul id="set_temperatures">
-    <li id="set_temperature1">Sensor 1 Set Temperature: <span id="set_temperature_value1">N/A</span></li>
-    <li id="set_temperature2">Sensor 2 Set Temperature: <span id="set_temperature_value2">N/A</span></li>
-    <li id="set_temperature3">Sensor 3 Set Temperature: <span id="set_temperature_value3">N/A</span></li>
-    <li id="set_temperature4">Sensor 4 Set Temperature: <span id="set_temperature_value4">N/A</span></li>
-    <li id="set_temperature5">Sensor 5 Set Temperature: <span id="set_temperature_value5">N/A</span></li>
-    <li id="set_temperature6">Sensor 6 Set Temperature: <span id="set_temperature_value6">N/A</span></li>
-    <li id="set_temperature7">Sensor 7 Set Temperature: <span id="set_temperature_value7">N/A</span></li>
-    <li id="set_temperature8">Sensor 8 Set Temperature: <span id="set_temperature_value8">N/A</span></li>
-  </ul>
-
-  <h2>Sensor Data:</h2>
-  <ul id="sensor_data">
-    <li id="sensor1">Sensor 1: <span id="sensor1_value">N/A</span></li>
-    <li id="sensor2">Sensor 2: <span id="sensor2_value">N/A</span></li>
-    <li id="sensor3">Sensor 3: <span id="sensor3_value">N/A</span></li>
-    <li id="sensor4">Sensor 4: <span id="sensor4_value">N/A</span></li>
-    <li id="sensor5">Sensor 5: <span id="sensor5_value">N/A</span></li>
-    <li id="sensor6">Sensor 6: <span id="sensor6_value">N/A</span></li>
-    <li id="sensor7">Sensor 7: <span id="sensor7_value">N/A</span></li>
-    <li id="sensor8">Sensor 8: <span id="sensor8_value">N/A</span></li>
-  </ul>
-
-  <script>
-    // Simulated set temperatures (replace with actual data)
-    // Function to fetch sensor data
-    function fetchSensorData() {
-      fetch('/updateData')
-        .then(response => response.json())
-        .then(data => {
-          // Update the sensor data display
-          const sensorDataElement = document.getElementById("sensor_data");
-          sensorDataElement.innerHTML = ''; // Clear previous data
-          for (const sensor in data) {
-            const listItem = document.createElement("li");
-            listItem.textContent = `${sensor}: ${data[sensor]}`;
-            sensorDataElement.appendChild(listItem);
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>User Page</title>
+    <!-- Favicons -->
+    <link href="static/fav.jpg" rel="icon">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        /* Custom CSS for button hover effect */
+        .card:hover {
+          transform: scale(1.05);
+          transition: transform 0.2s;
+        }
+        .tank-header {
+            font-size: 45px;
+            text-align: center;
+            color: blue;
           }
-        })
-        .catch(error => console.error('Error fetching sensor data:', error));
-    }
+      
+          .tank-temperature-details-up {
+            font-size: 16px;
+            text-align: center;
+          }
+          .tank-temperature-up {
+            font-size: 35px;
+            text-align: center;
+          }
+      
+          .tank-temperature-details-down {
+            font-size: 16px;
+            text-align: center;
+          }
+          .tank-temperature-down {
+            font-size: 25px;
+            text-align: center;
+          }
+          .social-icon {
+            font-size: 24px; /* Adjust the font size as needed */
+            margin-right: 15px; /* Add spacing between icons */
+            color: antiquewhite;
+          }
+      </style>
+      
+  </head>
+  <body>
+    <div class="container p-4 my-5 border" style="background-color: rgba(255, 255, 255, 0.5);">
+        <h3 class="text-center bg-light p-2">Welcome to the User Page!</h3>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
 
-    // Fetch sensor data initially
-    fetchSensorData();
+            <div class="col">
+                <div class="card">                    
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <div class="tank-header">TANK 1</div>
+                            <div class="tank-temperature-details-up">
+                                aktualni teplota
+                            </div>
+                            <div class="tank-temperature-up"><span id="set_temperature_value1">N/A</span>°C</div>
+                            <br>
+                            <div class="tank-temperature-details-down">nastavená teplota</div>
+                            <div class="tank-temperature-down"><span id="sensor1_value">N/A</span>°C</div>
+                        </h5>
+                    </div>
+                </div>
+            </div>
 
-    // Fetch sensor data periodically every 5 seconds
-    setInterval(fetchSensorData, 5000);
-    const setTemperatures = {
-      sensor1: "25°C",
-      sensor2: "26°C",
-      sensor3: "24°C",
-      sensor4: "27°C",
-      sensor5: "23°C",
-      sensor6: "25.5°C",
-      sensor7: "26.5°C",
-      sensor8: "24.5°C"
-    };
+            
+            <div class="col">
+                <div class="card">                    
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <div class="tank-header">TANK 2</div>
+                            <div class="tank-temperature-details-up">
+                                aktualni teplota
+                            </div>
+                            <div class="tank-temperature-up"><span id="set_temperature_value2">N/A</span>°C</div>
+                            <br>
+                            <div class="tank-temperature-details-down">nastavená teplota</div>
+                            <div class="tank-temperature-down"><span id="sensor2_value">N/A</span>°C</div>
+                        </h5>
+                    </div>
+                </div>
+            </div>
 
-    // Display set temperatures
-    for (const sensor in setTemperatures) {
-      const setTemperatureValue = setTemperatures[sensor];
-      const setTemperatureValueElement = document.getElementById(`set_temperature_value${sensor.slice(-1)}`);
-      if (setTemperatureValueElement) {
-        setTemperatureValueElement.textContent = setTemperatureValue;
-      }
-    }
+            
+            <div class="col">
+                <div class="card">                    
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <div class="tank-header">TANK 3</div>
+                            <div class="tank-temperature-details-up">
+                                aktualni teplota
+                            </div>
+                            <div class="tank-temperature-up"><span id="set_temperature_value3">N/A</span>°C</div>
+                            <br>
+                            <div class="tank-temperature-details-down">nastavená teplota</div>
+                            <div class="tank-temperature-down"><span id="sensor3_value">N/A</span>°C</div>
+                        </h5>
+                    </div>
+                </div>
+            </div>
 
-  </script>
-</body>
+            
+            <div class="col">
+                <div class="card">                    
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <div class="tank-header">TANK 4</div>
+                            <div class="tank-temperature-details-up">
+                                aktualni teplota
+                            </div>
+                            <div class="tank-temperature-up"><span id="set_temperature_value4">N/A</span>°C</div>
+                            <br>
+                            <div class="tank-temperature-details-down">nastavená teplota</div>
+                            <div class="tank-temperature-down"><span id="sensor4_value">N/A</span>°C</div>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="col">
+                <div class="card">                    
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <div class="tank-header">TANK 5</div>
+                            <div class="tank-temperature-details-up">
+                                aktualni teplota
+                            </div>
+                            <div class="tank-temperature-up"><span id="set_temperature_value5">N/A</span>°C</div>
+                            <br>
+                            <div class="tank-temperature-details-down">nastavená teplota</div>
+                            <div class="tank-temperature-down"><span id="sensor5_value">N/A</span>°C</div>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <br>
+        
+        <!-- Second row -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
+
+            <div class="col">
+                <div class="card">                    
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <div class="tank-header">TANK 6</div>
+                            <div class="tank-temperature-details-up">
+                                aktualni teplota
+                            </div>
+                            <div class="tank-temperature-up"><span id="set_temperature_value6">N/A</span>°C</div>
+                            <br>
+                            <div class="tank-temperature-details-down">nastavená teplota</div>
+                            <div class="tank-temperature-down"><span id="sensor6_value">N/A</span>°C</div>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="col">
+                <div class="card">                    
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <div class="tank-header">TANK 7</div>
+                            <div class="tank-temperature-details-up">
+                                aktualni teplota
+                            </div>
+                            <div class="tank-temperature-up"><span id="set_temperature_value7">N/A</span>°C</div>
+                            <br>
+                            <div class="tank-temperature-details-down">nastavená teplota</div>
+                            <div class="tank-temperature-down"><span id="sensor7_value">N/A</span>°C</div>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="col">
+                <div class="card">                    
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <div class="tank-header">TANK 8</div>
+                            <div class="tank-temperature-details-up">
+                                aktualni teplota
+                            </div>
+                            <div class="tank-temperature-up"><span id="set_temperature_value8">N/A</span>°C</div>
+                            <br>
+                            <div class="tank-temperature-details-down">nastavená teplota</div>
+                            <div class="tank-temperature-down"><span id="sensor8_value">N/A</span>°C</div>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="col">
+                <div class="card">                    
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <div class="tank-header">TANK 9</div>
+                            <div class="tank-temperature-details-up">
+                                aktualni teplota
+                            </div>
+                            <div class="tank-temperature-up"><span id="set_temperature_value9">N/A</span>°C</div>
+                            <br>
+                            <div class="tank-temperature-details-down">nastavená teplota</div>
+                            <div class="tank-temperature-down"><span id="sensor9_value">N/A</span>°C</div>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+
+        </div> 
+       <hr>
+       <!-- footer -->
+       <div class="container-fluid text-center text-white" style="background-color: #071bca;">
+            <div class="row">
+                <div class="col">
+                    <h4>ELITOP</h4>
+                    <h5>KLIMA</h5>
+                </div>
+                <div class="col">
+                    <br>
+                    <h5 class="m-0">www.elitop.cz</h5>
+                </div>
+                <div class="col">
+                    <br>
+                    <h5 class="m-0">copyright &copy; ELITOP klima s.r.o.</h5>
+                </div>
+            </div>
+        </div>
+    
+        <!-- footer ends -->
+    </div>
+   
+      
+        <style>
+            body {
+              background-image: url('bg-img.jpg');
+              background-repeat: no-repeat;
+              background-size: cover;
+            }
+          </style>
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+            <script>
+                function fetchSensorData() {
+                    fetch('/updateData')
+                        .then(response => response.json())
+                        .then(data => {
+                            // Update the sensor data display
+                            for (const sensor in data) {
+                                const sensorElement = document.getElementById(`sensor${sensor}_value`);
+                                if (sensorElement) {
+                                    sensorElement.textContent = data[sensor];
+                                }
+                            }
+                        })
+                        .catch(error => console.error('Error fetching sensor data:', error));
+                }
+
+                // Fetch sensor data initially
+                fetchSensorData();
+
+                // Fetch sensor data periodically every 5 seconds
+                setInterval(fetchSensorData, 5000);
+
+                let setTemperatures = {
+                    sensor1: "25",
+                    sensor2: "26",
+                    sensor3: "24",
+                    sensor4: "27°C",
+                    sensor5: "23°C",
+                    sensor6: "25.5°C",
+                    sensor7: "26.5°C",
+                    sensor8: "24.5°C"
+                };
+
+                function updateSensorDataDisplay(data) {
+                    for (const sensor in data) {
+                        const sensorElement = document.getElementById(`sensor${sensor}_value`);
+                        if (sensorElement) {
+                            sensorElement.textContent = data[sensor];
+                        }
+
+                        // Update setTemperatures if the sensor exists
+                        if (setTemperatures[sensor]) {
+                            setTemperatures[sensor] = data[sensor];
+                        }
+                    }
+
+                    // Display set temperatures after update
+                    for (const sensor in setTemperatures) {
+                        const setTemperatureValue = setTemperatures[sensor];
+                        const setTemperatureValueElement = document.getElementById(`set_temperature_value${sensor.slice(-1)}`);
+                        if (setTemperatureValueElement) {
+                            setTemperatureValueElement.textContent = setTemperatureValue;
+                        }
+                    }
+                }
+
+                function fetchSensorSet() {
+                    fetch('/updateSet')
+                        .then(response => response.json())
+                        .then(data => updateSensorDataDisplay(data))
+                        .catch(error => console.error('Error fetching sensor data:', error));
+                }
+
+                // Fetch sensor data initially and periodically every 5 seconds
+                fetchSensorSet();
+                setInterval(fetchSensorSet, 5000);
+            </script>
+
+  </body>
 </html>
