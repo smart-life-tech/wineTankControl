@@ -28,7 +28,7 @@ int numberOfSensors = 8;
 const int numRelays = 8;
 
 int relayPins[numRelays] = RELAY_PINS;
-float desiredTemperatures[numRelays];   // Array to store desired temperatures for each tank
+int desiredTemperatures[numRelays];   // Array to store desired temperatures for each tank
 int currentTankTemperatures[numRelays]; // Array to store current temperatures for each tank
 int relayMode[numRelays];
 
@@ -132,7 +132,7 @@ void handleUpdateData(AsyncWebServerRequest *request)
     response += "}";
     String responses = "{\"sensor1\": \"" + String(desiredTemperatures[0]) + "\", \"sensor2\": \"" + String(desiredTemperatures[1]) + "\",  \"sensor3\": \"" + String(desiredTemperatures[2]) + "\", \"sensor4\": \"" + String(desiredTemperatures[3]) + "\", \"sensor5\": \"" + String(desiredTemperatures[4]) + "\", \"sensor6\": \"" + String(desiredTemperatures[5]) + "\", \"sensor7\": \"" + String(desiredTemperatures[6]) + "\", \"sensor8\": \"" + String(desiredTemperatures[7]) + "\"}";
 
-    Serial.println(responses);
+    Serial.println("set data: "+responses);
     request->send(200, "application/json", responses);
 }
 
@@ -159,7 +159,7 @@ void handleUpdateSet(AsyncWebServerRequest *request)
     response += "}";
     String responses = "{\"sensor1\": \"" + String(currentTankTemperatures[0]) + "\", \"sensor2\": \"" + String(currentTankTemperatures[1]) + "\",  \"sensor3\": \"" + String(currentTankTemperatures[2]) + "\", \"sensor4\": \"" + String(currentTankTemperatures[3]) + "\", \"sensor5\": \"" + String(currentTankTemperatures[4]) + "\", \"sensor6\": \"" + String(currentTankTemperatures[5]) + "\", \"sensor7\": \"" + String(currentTankTemperatures[6]) + "\", \"sensor8\": \"" + String(currentTankTemperatures[7]) + "\"}";
 
-    Serial.println("set data: "+responses);
+    Serial.println("current data: "+responses);
     request->send(200, "application/json", responses);
 }
 
@@ -368,10 +368,10 @@ void setup()
     server.on("/login", HTTP_GET, [](AsyncWebServerRequest *request)
               { request->send(SPIFFS, "/login.html", "text/html"); });
 
-    server.on("/updateSet", HTTP_GET, handleUpdateData);
+    server.on("/updateData", HTTP_GET, handleUpdateData);
     server.on("/getIpAddress", HTTP_GET, handleGetIPAddress);
     server.on("/setAddresses", HTTP_POST, handleSetAddresses);
-    server.on("/updateData", HTTP_GET, handleUpdateSet);
+    server.on("/updateSet", HTTP_GET, handleUpdateSet);
 
     // Start the server
     server.begin();
@@ -409,7 +409,7 @@ void loop()
 
         // Update the current temperature display on Nextion for each tank
         myNex.writeNum("t" + String(i + 1) + "_akt.val", (currentTemperature));
-        /*
+        
                 Serial.print("Tank ");
                 Serial.print(i + 1);
                 Serial.print(" - Current Temperature v5: ");
@@ -417,7 +417,7 @@ void loop()
                 Serial.print("°C, Desired Temperature v5: ");
                 Serial.print(desiredTemperatures[i]);
                 Serial.println("°C");
-        */
+        
         if (currentTemperature > desiredTemperatures[i] && relayMode[i] == 10) // 10 = automatic
         {
             // Temperature exceeds desired, turn on the relay for cooling or other actions
