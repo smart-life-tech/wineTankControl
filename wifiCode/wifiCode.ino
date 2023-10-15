@@ -159,7 +159,7 @@ void handleUpdateSet(AsyncWebServerRequest *request)
     response += "}";
     String responses = "{\"sensor1\": \"" + String(currentTankTemperatures[0]) + "\", \"sensor2\": \"" + String(currentTankTemperatures[1]) + "\",  \"sensor3\": \"" + String(currentTankTemperatures[2]) + "\", \"sensor4\": \"" + String(currentTankTemperatures[3]) + "\", \"sensor5\": \"" + String(currentTankTemperatures[4]) + "\", \"sensor6\": \"" + String(currentTankTemperatures[5]) + "\", \"sensor7\": \"" + String(currentTankTemperatures[6]) + "\", \"sensor8\": \"" + String(currentTankTemperatures[7]) + "\"}";
 
-    Serial.println(responses);
+    Serial.println("set data: "+responses);
     request->send(200, "application/json", responses);
 }
 
@@ -368,10 +368,10 @@ void setup()
     server.on("/login", HTTP_GET, [](AsyncWebServerRequest *request)
               { request->send(SPIFFS, "/login.html", "text/html"); });
 
-    server.on("/updateData", HTTP_GET, handleUpdateData);
+    server.on("/updateSet", HTTP_GET, handleUpdateData);
     server.on("/getIpAddress", HTTP_GET, handleGetIPAddress);
     server.on("/setAddresses", HTTP_POST, handleSetAddresses);
-    server.on("/updateSet", HTTP_GET, handleUpdateSet);
+    server.on("/updateData", HTTP_GET, handleUpdateSet);
 
     // Start the server
     server.begin();
