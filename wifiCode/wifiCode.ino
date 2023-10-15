@@ -321,7 +321,7 @@ void setup()
  */
     bool res;
     AsyncWiFiManager wifiManager(&server, &dns);
-    wifiManager.resetSettings();
+    //wifiManager.resetSettings();
     // wifiManager.setAPConfig(IPAddress(10, 0, 1, 1), IPAddress(10, 0, 1, 1), IPAddress(255, 255, 255, 0));
     String macAdd = WiFi.localIP().toString();
     // WIFI_MANAGER_STATION_NAME = macAdd;
