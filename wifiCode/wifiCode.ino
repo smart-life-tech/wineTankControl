@@ -28,7 +28,7 @@ int numberOfSensors = 8;
 const int numRelays = 8;
 
 int relayPins[numRelays] = RELAY_PINS;
-int desiredTemperatures[numRelays];   // Array to store desired temperatures for each tank
+int desiredTemperatures[numRelays];     // Array to store desired temperatures for each tank
 int currentTankTemperatures[numRelays]; // Array to store current temperatures for each tank
 int relayMode[numRelays];
 
@@ -132,7 +132,7 @@ void handleUpdateData(AsyncWebServerRequest *request)
     response += "}";
     String responses = "{\"sensor1\": \"" + String(desiredTemperatures[0]) + "\", \"sensor2\": \"" + String(desiredTemperatures[1]) + "\",  \"sensor3\": \"" + String(desiredTemperatures[2]) + "\", \"sensor4\": \"" + String(desiredTemperatures[3]) + "\", \"sensor5\": \"" + String(desiredTemperatures[4]) + "\", \"sensor6\": \"" + String(desiredTemperatures[5]) + "\", \"sensor7\": \"" + String(desiredTemperatures[6]) + "\", \"sensor8\": \"" + String(desiredTemperatures[7]) + "\"}";
 
-    Serial.println("set data: "+responses);
+    Serial.println("set data: " + responses);
     request->send(200, "application/json", responses);
 }
 
@@ -159,7 +159,7 @@ void handleUpdateSet(AsyncWebServerRequest *request)
     response += "}";
     String responses = "{\"sensor1\": \"" + String(currentTankTemperatures[0]) + "\", \"sensor2\": \"" + String(currentTankTemperatures[1]) + "\",  \"sensor3\": \"" + String(currentTankTemperatures[2]) + "\", \"sensor4\": \"" + String(currentTankTemperatures[3]) + "\", \"sensor5\": \"" + String(currentTankTemperatures[4]) + "\", \"sensor6\": \"" + String(currentTankTemperatures[5]) + "\", \"sensor7\": \"" + String(currentTankTemperatures[6]) + "\", \"sensor8\": \"" + String(currentTankTemperatures[7]) + "\"}";
 
-    Serial.println("current data: "+responses);
+    Serial.println("current data: " + responses);
     request->send(200, "application/json", responses);
 }
 
@@ -254,8 +254,15 @@ String processor(const String &var)
 
 void setup()
 {
-    
+
     Serial.begin(115200);
+    // Configures static IP address
+    // if (!WiFi.config(local_IP, gateway, subnet))
+    //  {
+    //      Serial.println("STA Failed to configure");
+    // }
+    // Print ESP32 Local IP Address
+    Serial.println(WiFi.localIP());
     Serial.println("Dallas Temperature IC Control Library Demo");
     sensors.begin();
     // locate devices on the bus
@@ -321,15 +328,15 @@ void setup()
  */
     bool res;
     AsyncWiFiManager wifiManager(&server, &dns);
-    //wifiManager.resetSettings();
-    // wifiManager.setAPConfig(IPAddress(10, 0, 1, 1), IPAddress(10, 0, 1, 1), IPAddress(255, 255, 255, 0));
+    // wifiManager.resetSettings();
+    //  wifiManager.setAPConfig(IPAddress(10, 0, 1, 1), IPAddress(10, 0, 1, 1), IPAddress(255, 255, 255, 0));
     String macAdd = WiFi.localIP().toString();
     // WIFI_MANAGER_STATION_NAME = macAdd;
     // char  * apNames = macAdd.c_str();
     char apNames[30];
     macAdd.toCharArray(apNames, 30);
     Serial.println(apNames);
-    //wifiManager.autoConnect(apNames);
+    // wifiManager.autoConnect(apNames);
     res = wifiManager.autoConnect(apNames); // password protected ap
 
     if (!res)
@@ -341,14 +348,9 @@ void setup()
     {
         // if you get here you have connected to the WiFi
         Serial.println("connected...yeey :)");
+        Serial.println(WiFi.localIP());
     }
-    // Configures static IP address
-    // if (!WiFi.config(local_IP, gateway, subnet))
-    // {
-    //    Serial.println("STA Failed to configure");
-    // }
-    // Print ESP32 Local IP Address
-    Serial.println(WiFi.localIP());
+
     // Route for root / web page
     server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
               { request->send(SPIFFS, "/index.html", String(), false, processor); });
@@ -409,15 +411,15 @@ void loop()
 
         // Update the current temperature display on Nextion for each tank
         myNex.writeNum("t" + String(i + 1) + "_akt.val", (currentTemperature));
-        
-                Serial.print("Tank ");
-                Serial.print(i + 1);
-                Serial.print(" - Current Temperature v5: ");
-                Serial.print(currentTemperature);
-                Serial.print("°C, Desired Temperature v5: ");
-                Serial.print(desiredTemperatures[i]);
-                Serial.println("°C");
-        
+
+        Serial.print("Tank ");
+        Serial.print(i + 1);
+        Serial.print(" - Current Temperature v5: ");
+        Serial.print(currentTemperature);
+        Serial.print("°C, Desired Temperature v5: ");
+        Serial.print(desiredTemperatures[i]);
+        Serial.println("°C");
+
         if (currentTemperature > desiredTemperatures[i] && relayMode[i] == 10) // 10 = automatic
         {
             // Temperature exceeds desired, turn on the relay for cooling or other actions
