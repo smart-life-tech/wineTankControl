@@ -387,15 +387,15 @@ void loop()
     for (int i = 0; i < numRelays; i++)
     {
         int readTemp = myNex.readNumber("t" + String(i + 1) + "_poz.val");
-        if (readTemp < 500)
-        {
+       // if (readTemp < 500)
+       // {
             desiredTemperatures[i] = readTemp;
             Serial.print("Desired Temperature v10: ");
             Serial.print(desiredTemperatures[i]);
             Serial.println("°C");
             if (readTemp != EEPROM.read(i))
                 EEPROM.write(i, desiredTemperatures[i]);
-        }
+        //}
         delay(300);
     }
     for (int i = 0; i < numRelays; i++)
@@ -418,7 +418,7 @@ void loop()
         Serial.print("Tank ");
         Serial.print(i + 1);
         Serial.print(" - Current Temperature v5: ");
-        Serial.print(currentTemperature);
+        Serial.println(currentTemperature);
 
         if (currentTemperature > desiredTemperatures[i] && relayMode[i] == 10) // 10 = automatic
         {
