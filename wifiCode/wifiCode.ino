@@ -390,6 +390,9 @@ void loop()
         if (readTemp < 500)
         {
             desiredTemperatures[i] = readTemp;
+            Serial.print("Desired Temperature v10: ");
+            Serial.print(desiredTemperatures[i]);
+            Serial.println("°C");
             if (readTemp != EEPROM.read(i))
                 EEPROM.write(i, desiredTemperatures[i]);
         }
@@ -416,9 +419,6 @@ void loop()
         Serial.print(i + 1);
         Serial.print(" - Current Temperature v5: ");
         Serial.print(currentTemperature);
-        Serial.print("°C, Desired Temperature v5: ");
-        Serial.print(desiredTemperatures[i]);
-        Serial.println("°C");
 
         if (currentTemperature > desiredTemperatures[i] && relayMode[i] == 10) // 10 = automatic
         {
