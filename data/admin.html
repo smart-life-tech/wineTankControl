@@ -26,8 +26,14 @@
     <input type="text" id="sensor7" name="sensor7"><br>
     <label for="sensor8">Sensor 8 Address:</label>
     <input type="text" id="sensor8" name="sensor8"><br>
+    
+  </form>
+  <form ction="/setband" method="POST">
+    <label for="deadband">ENTER VARIATION</label>
+    <input type="number" id="deadband" name="deadband" min="0"><br>
     <input type="submit" value="Set Addresses">
   </form>
+  
   <button onclick="loadLocalPage" id="loadPageButton">Login </button>
   <script>
     // Function to handle form submission and send the addresses to the ESP32
@@ -41,7 +47,7 @@
       const sensor6 = document.getElementById("sensor6").value;
       const sensor7 = document.getElementById("sensor7").value;
       const sensor8 = document.getElementById("sensor8").value;
-
+      const deadband = document.getElementById("deadband").value;
       // Send the addresses to the ESP32
       const xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function () {
@@ -55,7 +61,7 @@
       };
       xhr.open("POST", "/setAddresses", true);
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhr.send(`sensor1=${sensor1}&sensor2=${sensor2}&sensor3=${sensor3}&sensor4=${sensor4}&sensor5=${sensor5}&sensor6=${sensor6}&sensor7=${sensor7}&sensor8=${sensor8}`);
+      xhr.send(`sensor1=${sensor1}&sensor2=${sensor2}&sensor3=${sensor3}&sensor4=${sensor4}&sensor5=${sensor5}&sensor6=${sensor6}&sensor7=${sensor7}&sensor8=${sensor8}&deadband=${deadband}`);
       xhr.open("POST", "admin.html", true);
     }
 
