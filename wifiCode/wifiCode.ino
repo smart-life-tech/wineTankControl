@@ -1,4 +1,3 @@
-// version 10.5
 #include "WiFi.h"
 #include "SPIFFS.h"
 #include "ESPAsyncWebServer.h"
@@ -31,6 +30,8 @@ const int numRelays = 8;
 int relayPins[numRelays] = RELAY_PINS;
 int desiredTemperatures[numRelays];     // Array to store desired temperatures for each tank
 int currentTankTemperatures[numRelays]; // Array to store current temperatures for each tank
+String cool[numRelays];                 // Array to store cool for each tank
+int mode[numRelays];                    // Array to store mode for each tank
 int relayMode[numRelays];
 
 EasyNex myNex(Serial2); // Use the correct Serial port and baud rate
@@ -161,6 +162,60 @@ void handleUpdateSet(AsyncWebServerRequest *request)
     String responses = "{\"sensor1\": \"" + String(currentTankTemperatures[0]) + "\", \"sensor2\": \"" + String(currentTankTemperatures[1]) + "\",  \"sensor3\": \"" + String(currentTankTemperatures[2]) + "\", \"sensor4\": \"" + String(currentTankTemperatures[3]) + "\", \"sensor5\": \"" + String(currentTankTemperatures[4]) + "\", \"sensor6\": \"" + String(currentTankTemperatures[5]) + "\", \"sensor7\": \"" + String(currentTankTemperatures[6]) + "\", \"sensor8\": \"" + String(currentTankTemperatures[7]) + "\"}";
 
     Serial.println("current data: " + responses);
+    request->send(200, "application/json", responses);
+}
+
+void handleUpdateCool(AsyncWebServerRequest *request)
+{
+    // Assuming you have an array cool with the temperature data for 8 sensors
+
+    String sensorData[8];
+
+    for (int i = 0; i < 8; i++)
+    {
+        sensorData[i] = "sensor" + String(i + 1) + ": " + String(cool[i]);
+    }
+    // Build the JSON response
+    String response = "{";
+    for (int i = 0; i < 8; i++)
+    {
+        response += "\"" + sensorData[i] + "\"";
+        if (i < 7)
+        {
+            response += ",";
+        }
+    }
+    response += "}";
+    String responses = "{\"sensor1\": \"" + String(cool[0]) + "\", \"sensor2\": \"" + String(cool[1]) + "\",  \"sensor3\": \"" + String(cool[2]) + "\", \"sensor4\": \"" + String(cool[3]) + "\", \"sensor5\": \"" + String(cool[4]) + "\", \"sensor6\": \"" + String(cool[5]) + "\", \"sensor7\": \"" + String(cool[6]) + "\", \"sensor8\": \"" + String(cool[7]) + "\"}";
+
+    Serial.println("cool data: " + responses);
+    request->send(200, "application/json", responses);
+}
+
+void handleUpdateMode(AsyncWebServerRequest *request)
+{
+    // Assuming you have an array mode with the temperature data for 8 sensors
+
+    String sensorData[8];
+
+    for (int i = 0; i < 8; i++)
+    {
+        sensorData[i] = "sensor" + String(i + 1) + ": " + String(mode[i]);
+    }
+    // Build the JSON response
+    String response = "{";
+    for (int i = 0; i < 8; i++)
+    {
+        response += "\"" + sensorData[i] + "\"";
+        if (i < 7)
+        {
+            response += ",";
+        }
+    }
+    response += "}";
+    String responses = "{\"sensor1\": \"" + String(mode[0]) + "\", \"sensor2\": \"" + String(mode[1]) + "\",  \"sensor3\": \"" + String(mode[2]) + "\", \"sensor4\": \"" + String(mode[3]) + "\", \"sensor5\": \"" + String(mode[4]) + "\", \"sensor6\": \"" + String(mode[5]) + "\", \"sensor7\": \"" + String(mode[6]) + "\", \"sensor8\": \"" + String(mode[7]) + "\"}";
+
+    Serial.println("mode data: " + responses);
     request->send(200, "application/json", responses);
 }
 
@@ -338,7 +393,7 @@ void setup()
     macAdd.toCharArray(apNames, 30);
     Serial.println(apNames);
     // wifiManager.autoConnect(apNames);
-    res = wifiManager.autoConnect(apNames, "password", 10, 1000); // password protected ap
+    res = wifiManager.autoConnect(apNames); // password protected ap
 
     if (!res)
     {
@@ -357,8 +412,12 @@ void setup()
               { request->send(SPIFFS, "/index.html", String(), false, processor); });
 
     // Route to load style.css file
-    server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
-              { request->send(SPIFFS, "/style.css", "text/css"); });
+    server.on("/styles.css", HTTP_GET, [](AsyncWebServerRequest *request)
+              { request->send(SPIFFS, "/styles.css", "text/css"); });
+    server.on("/bg-img.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
+              { request->send(SPIFFS, "/bg-img.jpg", "image/jpg"); });
+    server.on("/cool.png", HTTP_GET, [](AsyncWebServerRequest *request)
+              { request->send(SPIFFS, "/cool.png", "image/png"); });
     // Set up server handlers
     server.on("/admin.html", HTTP_GET, [](AsyncWebServerRequest *request)
               { request->send(SPIFFS, "/admin.html", String(), false, processor); });
@@ -375,6 +434,9 @@ void setup()
     server.on("/getIpAddress", HTTP_GET, handleGetIPAddress);
     server.on("/setAddresses", HTTP_POST, handleSetAddresses);
     server.on("/updateSet", HTTP_GET, handleUpdateSet);
+    server.on("/updateCool", HTTP_GET, handleUpdateCool);
+    server.on("/updateMode", HTTP_GET, handleUpdateMode);
+    // server.serveStatic("/", SPIFFS, "/");
 
     // Start the server
     server.begin();
@@ -388,20 +450,18 @@ void loop()
     for (int i = 0; i < numRelays; i++)
     {
         int readTemp = myNex.readNumber("t" + String(i + 1) + "_poz.val");
-        // if (readTemp < 500)
-        // {
-        desiredTemperatures[i] = readTemp;
-        Serial.print("Desired Temperature v10: ");
-        Serial.print(desiredTemperatures[i]);
-        Serial.println("°C");
-        if (readTemp != EEPROM.read(i))
-            EEPROM.write(i, desiredTemperatures[i]);
-        //}
+        if (readTemp < 500)
+        {
+            desiredTemperatures[i] = readTemp;
+            if (readTemp != EEPROM.read(i))
+                EEPROM.write(i, desiredTemperatures[i]);
+        }
         delay(300);
     }
     for (int i = 0; i < numRelays; i++)
     {
         relayMode[i] = myNex.readNumber("auto" + String(i + 1) + ".val");
+        // relayMode[i] = 10;
         //   Serial.print("relayMode " + String(i)) + " ";
         // Serial.println(relayMode[i]);
         delay(300);
@@ -411,6 +471,8 @@ void loop()
     for (int i = 0; i < numRelays; i++)
     {
         int currentTemperature = sensors.getTempCByIndex(i);
+        // currentTemperature = random(100);
+        // desiredTemperatures[i] = random(100);
         currentTankTemperatures[i] = (currentTemperature);
 
         // Update the current temperature display on Nextion for each tank
@@ -419,25 +481,38 @@ void loop()
         Serial.print("Tank ");
         Serial.print(i + 1);
         Serial.print(" - Current Temperature v5: ");
-        Serial.println(currentTemperature);
+        Serial.print(currentTemperature);
+        Serial.print("°C, Desired Temperature v5: ");
+        Serial.print(desiredTemperatures[i]);
+        Serial.println("°C");
 
         if (currentTemperature > desiredTemperatures[i] && relayMode[i] == 10) // 10 = automatic
         {
-            // Temperature exceeds desired, turn on the relay for cooling or other actions
+            // Temperature exceeds desired, turn on the relay for modeing or other actions
             digitalWrite(relayPins[i], HIGH);
+            cool[i] = "on";
         }
         else
         {
             digitalWrite(relayPins[i], LOW);
+            cool[i] = "off";
         }
         delay(300);
         if (relayMode[i] == 20) // manual mode
         {
+            // relayMode[i] = 30;
             digitalWrite(relayPins[i], HIGH);
+            mode[i] = 0;
         }
         else if (relayMode[i] == 30) // nothing set relay off
         {
+            // relayMode[i] = 10;
             digitalWrite(relayPins[i], LOW);
+            mode[i] = 2;
+        }
+        else if (relayMode[i] == 10)
+        {
+            mode[1] = 1;
         }
     }
     // EEPROM.commit();/ only for the esp
