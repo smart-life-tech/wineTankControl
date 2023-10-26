@@ -33,7 +33,7 @@ int currentTankTemperatures[numRelays]; // Array to store current temperatures f
 String cool[numRelays];                 // Array to store cool for each tank
 int mode[numRelays];                    // Array to store mode for each tank
 int relayMode[numRelays];
-String modes[numRelays]; 
+String modes[numRelays];
 EasyNex myNex(Serial2); // Use the correct Serial port and baud rate
 // Adresy cidel
 // DeviceAddress tank1, tank2, tank3, tank4, tank5, tank6, tank7, tank8;
@@ -462,8 +462,26 @@ void loop()
     {
         relayMode[i] = myNex.readNumber("auto" + String(i + 1) + ".val");
         // relayMode[i] = 10;
-        Serial.print("relayMode " + String(i)) + " ";
+        Serial.print("relayModes " + String(i)) + "   ";
         Serial.println(relayMode[i]);
+        if (relayMode[i] == 20) // manual mode
+        {
+            // relayMode[i] = 30;
+            digitalWrite(relayPins[i], HIGH);
+            cool[i] = "on";
+            modes[i] = "M";
+        }
+        else if (relayMode[i] == 30) // nothing set relay off
+        {
+            // relayMode[i] = 10;
+            digitalWrite(relayPins[i], LOW);
+            modes[i] = " ";
+            cool[i] = "off";
+        }
+        else if (relayMode[i] == 10)
+        {
+            modes[i] = "A";
+        }
         delay(300);
     }
     sensors.requestTemperatures(); // Request temperature readings
@@ -492,28 +510,12 @@ void loop()
             digitalWrite(relayPins[i], HIGH);
             cool[i] = "on";
         }
-        else
+        else if (currentTemperature < desiredTemperatures[i] && relayMode[i] == 10)
         {
             digitalWrite(relayPins[i], LOW);
             cool[i] = "off";
         }
         delay(300);
-        if (relayMode[i] == 20) // manual mode
-        {
-            // relayMode[i] = 30;
-            digitalWrite(relayPins[i], HIGH);
-            modes[i] = "M";
-        }
-        else if (relayMode[i] == 30) // nothing set relay off
-        {
-            // relayMode[i] = 10;
-            digitalWrite(relayPins[i], LOW);
-            modes[i] = " ";
-        }
-        else if (relayMode[i] == 10)
-        {
-            modes[1] = "A";
-        }
     }
     // EEPROM.commit();/ only for the esp
     delay(1000); // Delay for a second before reading temperatures again

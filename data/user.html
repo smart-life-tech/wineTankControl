@@ -387,23 +387,22 @@
             }
         }
 
-        // Fetch Switch data initially
+        // Fetch Switch data initially and periodically every 5 seconds
         fetchSwitch();
-        // Fetch Switch data periodically every 5 seconds
-        setInterval(fetchSwitch, 3000);
+        setInterval(fetchSwitch, 5000);
 
-        // Fetch mode data initially and periodically every 5 seconds
+        // Fetch mode data initially and periodically every 6 seconds
         fetchMode();
         setInterval(fetchMode, 6000);
-        //===============================================================
 
-        // Fetch sensor data initially
+        // Fetch sensor data initially and periodically every 4 seconds
         fetchSensorData();
-        // Fetch sensor data periodically every 5 seconds
         setInterval(fetchSensorData, 4000);
-        // Fetch sensor data initially and periodically every 5 seconds
+
+        // Fetch sensor set data initially and periodically every 5 seconds
         fetchSensorSet();
         setInterval(fetchSensorSet, 5000);
+
 
 
         //---------------------------------------------------//
