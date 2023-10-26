@@ -33,7 +33,7 @@ int currentTankTemperatures[numRelays]; // Array to store current temperatures f
 String cool[numRelays];                 // Array to store cool for each tank
 int mode[numRelays];                    // Array to store mode for each tank
 int relayMode[numRelays];
-
+String modes[numRelays]; 
 EasyNex myNex(Serial2); // Use the correct Serial port and baud rate
 // Adresy cidel
 // DeviceAddress tank1, tank2, tank3, tank4, tank5, tank6, tank7, tank8;
@@ -213,9 +213,9 @@ void handleUpdateMode(AsyncWebServerRequest *request)
         }
     }
     response += "}";
-    String responses = "{\"sensor1\": \"" + String(mode[0]) + "\", \"sensor2\": \"" + String(mode[1]) + "\",  \"sensor3\": \"" + String(mode[2]) + "\", \"sensor4\": \"" + String(mode[3]) + "\", \"sensor5\": \"" + String(mode[4]) + "\", \"sensor6\": \"" + String(mode[5]) + "\", \"sensor7\": \"" + String(mode[6]) + "\", \"sensor8\": \"" + String(mode[7]) + "\"}";
+    String responses = "{\"sensor1\": \"" + String(modes[0]) + "\", \"sensor2\": \"" + String(modes[1]) + "\",  \"sensor3\": \"" + String(modes[2]) + "\", \"sensor4\": \"" + String(modes[3]) + "\", \"sensor5\": \"" + String(modes[4]) + "\", \"sensor6\": \"" + String(modes[5]) + "\", \"sensor7\": \"" + String(modes[6]) + "\", \"sensor8\": \"" + String(modes[7]) + "\"}";
 
-    Serial.println("mode data: " + responses);
+    Serial.println("modes data: " + responses);
     request->send(200, "application/json", responses);
 }
 
@@ -462,8 +462,8 @@ void loop()
     {
         relayMode[i] = myNex.readNumber("auto" + String(i + 1) + ".val");
         // relayMode[i] = 10;
-        //   Serial.print("relayMode " + String(i)) + " ";
-        // Serial.println(relayMode[i]);
+        Serial.print("relayMode " + String(i)) + " ";
+        Serial.println(relayMode[i]);
         delay(300);
     }
     sensors.requestTemperatures(); // Request temperature readings
@@ -502,17 +502,17 @@ void loop()
         {
             // relayMode[i] = 30;
             digitalWrite(relayPins[i], HIGH);
-            mode[i] = 0;
+            modes[i] = "M";
         }
         else if (relayMode[i] == 30) // nothing set relay off
         {
             // relayMode[i] = 10;
             digitalWrite(relayPins[i], LOW);
-            mode[i] = 2;
+            modes[i] = " ";
         }
         else if (relayMode[i] == 10)
         {
-            mode[1] = 1;
+            modes[1] = "A";
         }
     }
     // EEPROM.commit();/ only for the esp

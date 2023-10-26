@@ -69,7 +69,7 @@
                                 aktualni teplota
                             </div>
                             <div class="tank-temperature-up"><span id="set_temperature_value1">N/A</span>°C</div>
-                            <p style="text-align: right; color: red" id="switch1">A</p>
+                            <p style="text-align: right; color: red" id="switch1"></p>
                             <div style="display: flex; align-items: center;">
                                 <div style="flex: 1;">
                                     <div class="tank-temperature-details-down">nastavená teplota</div>
@@ -205,8 +205,7 @@
                                     <div class="tank-temperature-down"><span id="sensor6_value">N/A</span>°C</div>
                                 </div>
                                 <div>
-                                    <img src="cool.png"  style="width: 30px; height: 30px; margin: 0;"
-                                        id="cool6" />
+                                    <img src="cool.png" style="width: 30px; height: 30px; margin: 0;" id="cool6" />
                                 </div>
                             </div>
                         </h5>
@@ -231,8 +230,7 @@
                                     <div class="tank-temperature-down"><span id="sensor7_value">N/A</span>°C</div>
                                 </div>
                                 <div>
-                                    <img src="cool.png"  style="width: 30px; height: 30px; margin: 0;"
-                                        id="cool7" />
+                                    <img src="cool.png" style="width: 30px; height: 30px; margin: 0;" id="cool7" />
                                 </div>
                             </div>
                         </h5>
@@ -257,8 +255,7 @@
                                     <div class="tank-temperature-down"><span id="sensor8_value">N/A</span>°C</div>
                                 </div>
                                 <div>
-                                    <img src="cool.png"  style="width: 30px; height: 30px; margin: 0;"
-                                        id="cool8" />
+                                    <img src="cool.png" style="width: 30px; height: 30px; margin: 0;" id="cool8" />
                                 </div>
                             </div>
                         </h5>
@@ -283,8 +280,7 @@
                                     <div class="tank-temperature-down"><span id="sensor9_value">N/A</span>°C</div>
                                 </div>
                                 <div>
-                                    <img src="cool.png"  style="width: 30px; height: 30px; margin: 0;"
-                                        id="cool9" />
+                                    <img src="cool.png" style="width: 30px; height: 30px; margin: 0;" id="cool9" />
                                 </div>
                             </div>
                         </h5>
@@ -394,17 +390,17 @@
         // Fetch Switch data initially
         fetchSwitch();
         // Fetch Switch data periodically every 5 seconds
-        setInterval(fetchSwitch, 5000);
+        setInterval(fetchSwitch, 3000);
 
         // Fetch mode data initially and periodically every 5 seconds
         fetchMode();
-        setInterval(fetchMode, 5000);
+        setInterval(fetchMode, 6000);
         //===============================================================
 
         // Fetch sensor data initially
         fetchSensorData();
         // Fetch sensor data periodically every 5 seconds
-        setInterval(fetchSensorData, 5000);
+        setInterval(fetchSensorData, 4000);
         // Fetch sensor data initially and periodically every 5 seconds
         fetchSensorSet();
         setInterval(fetchSensorSet, 5000);
@@ -418,6 +414,9 @@
                 const switchElement = document.getElementById(`switch${sensor.slice(-1)}`);
 
                 if (switchElement) {
+                    switchElement.innerHTML = data[sensor];
+                    switchElement.textContent = data[sensor];
+                    /*
                     if (data[sensor] === "1") {
                         switchElement.innerHTML = "A";
                         switchElement.textContent = "A";
@@ -427,7 +426,7 @@
                     } else if (data[sensor] === "2") {
                         switchElement.innerHTML = "<br>"; // This is N, it wont display anything
                         switchElement.textContent = "";
-                    }
+                    }*/
                 }
             }
         }
