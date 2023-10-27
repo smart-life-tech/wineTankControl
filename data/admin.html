@@ -26,17 +26,35 @@
     <input type="text" id="sensor7" name="sensor7"><br>
     <label for="sensor8">Sensor 8 Address:</label>
     <input type="text" id="sensor8" name="sensor8"><br>
-    
-  </form>
-  <form ction="/setband" method="POST">
-    <label for="deadband">ENTER VARIATION</label>
-    <input type="number" id="deadband" name="deadband" min="0"><br>
+
+    <!-- Input field for hysteresis -->
+    <label for="hysteresis">Hysteresis (°C):</label>
+    <input type="number" id="hysteresis" name="hysteresis" step="0.5" min="0"><br>
+
+    <!-- Input fields for sensor corrections -->
+    <label for="correction1">Sensor 1 Correction (°C):</label>
+    <input type="number" id="correction1" name="correction1" step="0.5"><br>
+    <label for="correction2">Sensor 2 Correction (°C):</label>
+    <input type="number" id="correction2" name="correction2" step="0.5"><br>
+    <label for="correction3">Sensor 3 Correction (°C):</label>
+    <input type="number" id="correction3" name="correction3" step="0.5"><br>
+    <label for="correction4">Sensor 4 Correction (°C):</label>
+    <input type="number" id="correction4" name="correction4" step="0.5"><br>
+    <label for="correction5">Sensor 5 Correction (°C):</label>
+    <input type="number" id="correction5" name="correction5" step="0.5"><br>
+    <label for="correction6">Sensor 6 Correction (°C):</label>
+    <input type="number" id="correction6" name="correction6" step="0.5"><br>
+    <label for="correction7">Sensor 7 Correction (°C):</label>
+    <input type="number" id="correction7" name="correction7" step="0.5"><br>
+    <label for="correction8">Sensor 8 Correction (°C):</label>
+    <input type="number" id="correction8" name="correction8" step="0.5"><br>
+
     <input type="submit" value="Set Addresses">
   </form>
-  
-  <button onclick="loadLocalPage" id="loadPageButton">Login </button>
+
+  <button id="loadPageButton">Login</button>
   <script>
-    // Function to handle form submission and send the addresses to the ESP32
+    // Function to handle form submission and send the addresses and hysteresis to the ESP32
     function handleFormSubmission(event) {
       event.preventDefault();
       const sensor1 = document.getElementById("sensor1").value;
@@ -47,21 +65,31 @@
       const sensor6 = document.getElementById("sensor6").value;
       const sensor7 = document.getElementById("sensor7").value;
       const sensor8 = document.getElementById("sensor8").value;
-      const deadband = document.getElementById("deadband").value;
-      // Send the addresses to the ESP32
+
+      const hysteresis = document.getElementById("hysteresis").value;
+
+      const correction1 = document.getElementById("correction1").value;
+      const correction2 = document.getElementById("correction2").value;
+      const correction3 = document.getElementById("correction3").value;
+      const correction4 = document.getElementById("correction4").value;
+      const correction5 = document.getElementById("correction5").value;
+      const correction6 = document.getElementById("correction6").value;
+      const correction7 = document.getElementById("correction7").value;
+      const correction8 = document.getElementById("correction8").value;
+
       const xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
           if (xhr.status === 200) {
-            alert("Sensor addresses set successfully!");
+            alert("Settings saved successfully!");
           } else {
-            alert("Failed to set sensor addresses.");
+            alert("Failed to save settings.");
           }
         }
       };
       xhr.open("POST", "/setAddresses", true);
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhr.send(`sensor1=${sensor1}&sensor2=${sensor2}&sensor3=${sensor3}&sensor4=${sensor4}&sensor5=${sensor5}&sensor6=${sensor6}&sensor7=${sensor7}&sensor8=${sensor8}&deadband=${deadband}`);
+      xhr.send(`sensor1=${sensor1}&sensor2=${sensor2}&sensor3=${sensor3}&sensor4=${sensor4}&sensor5=${sensor5}&sensor6=${sensor6}&sensor7=${sensor7}&sensor8=${sensor8}&hysteresis=${hysteresis}&correction1=${correction1}&correction2=${correction2}&correction3=${correction3}&correction4=${correction4}&correction5=${correction5}&correction6=${correction6}&correction7=${correction7}&correction8=${correction8}`);
       xhr.open("POST", "admin.html", true);
     }
 
@@ -72,7 +100,6 @@
 
     // Event listener to trigger the function when the button is clicked
     document.getElementById('loadPageButton').addEventListener('click', loadLocalPage);
-
   </script>
 </body>
 

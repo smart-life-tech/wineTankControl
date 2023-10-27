@@ -232,17 +232,43 @@ void handleAdminPage(AsyncWebServerRequest *request)
 
 void handleSetAddresses(AsyncWebServerRequest *request)
 {
+    // Route to handle POST requests for setting sensor addresses, hysteresis, and corrections
+    String sensor1 = request->arg("sensor1");
+    String sensor2 = request->arg("sensor2");
+    String sensor3 = request->arg("sensor3");
+    String sensor4 = request->arg("sensor4");
+    String sensor5 = request->arg("sensor5");
+    String sensor6 = request->arg("sensor6");
+    String sensor7 = request->arg("sensor7");
+    String sensor8 = request->arg("sensor8");
+
+    String hysteresis = request->arg("hysteresis");
+
+    String correction1 = request->arg("correction1");
+    String correction2 = request->arg("correction2");
+    String correction3 = request->arg("correction3");
+    String correction4 = request->arg("correction4");
+    String correction5 = request->arg("correction5");
+    String correction6 = request->arg("correction6");
+    String correction7 = request->arg("correction7");
+    String correction8 = request->arg("correction8");
+
+    // Process the data as needed
+    // For example, you can save the settings to variables or EEPROM
+
+    request->send(200, "text/plain", "Settings saved successfully");
+
     /*
     String sensor1 = request->arg("sensor1");
     String sensor2 = request->arg("sensor2");
     // Retrieve other sensor addresses as needed
-
+*/
     // Print or use the retrieved sensor addresses
     Serial.print("Sensor 1 Address: ");
     Serial.println(sensor1);
     Serial.print("Sensor 2 Address: ");
     Serial.println(sensor2);
-    */
+
     // Print or use other sensor addresses
     // ...
     // Store tank addresses in the array
