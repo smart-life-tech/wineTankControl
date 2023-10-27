@@ -9,7 +9,7 @@
 <body>
   <h1>Welcome to the Admin Page!</h1>
   <h2>Set Temperature DS18B20 Addresses:</h2>
-  <form action="/setAddresses" method="POST">
+  <form action="/setAddresses" method="POST" id="settings-form">
     <label for="sensor1">Sensor 1 Address:</label>
     <input type="text" id="sensor1" name="sensor1"><br>
     <label for="sensor2">Sensor 2 Address:</label>
@@ -48,34 +48,39 @@
     <input type="number" id="correction7" name="correction7" step="0.5"><br>
     <label for="correction8">Sensor 8 Correction (°C):</label>
     <input type="number" id="correction8" name="correction8" step="0.5"><br>
-
-    <input type="submit" value="Set Addresses">
+    <input type="submit" value="Set Addresses" >
   </form>
 
   <button id="loadPageButton">Login</button>
   <script>
+    // Load form data from local storage
+    const form = document.getElementById('settings-form');
+    for (let i = 1; i <= 8; i++) {
+      const sensorInput = form.querySelector(`#sensor${i}`);
+      sensorInput.value = localStorage.getItem(`sensor${i}`);
+
+      const correctionInput = form.querySelector(`#correction${i}`);
+      correctionInput.value = localStorage.getItem(`correction${i}`);
+    }
+
+    // Load hysteresis
+    const hysteresisInput = form.querySelector('#hysteresis');
+    hysteresisInput.value = localStorage.getItem('hysteresis');
+
     // Function to handle form submission and send the addresses and hysteresis to the ESP32
     function handleFormSubmission(event) {
       event.preventDefault();
-      const sensor1 = document.getElementById("sensor1").value;
-      const sensor2 = document.getElementById("sensor2").value;
-      const sensor3 = document.getElementById("sensor3").value;
-      const sensor4 = document.getElementById("sensor4").value;
-      const sensor5 = document.getElementById("sensor5").value;
-      const sensor6 = document.getElementById("sensor6").value;
-      const sensor7 = document.getElementById("sensor7").value;
-      const sensor8 = document.getElementById("sensor8").value;
+      const form = document.getElementById('settings-form');
+      for (let i = 1; i <= 8; i++) {
+        const sensorInput = form.querySelector(`#sensor${i}`);
+        localStorage.setItem(`sensor${i}`, sensorInput.value);
+
+        const correctionInput = form.querySelector(`#correction${i}`);
+        localStorage.setItem(`correction${i}`, correctionInput.value);
+      }
 
       const hysteresis = document.getElementById("hysteresis").value;
-
-      const correction1 = document.getElementById("correction1").value;
-      const correction2 = document.getElementById("correction2").value;
-      const correction3 = document.getElementById("correction3").value;
-      const correction4 = document.getElementById("correction4").value;
-      const correction5 = document.getElementById("correction5").value;
-      const correction6 = document.getElementById("correction6").value;
-      const correction7 = document.getElementById("correction7").value;
-      const correction8 = document.getElementById("correction8").value;
+      localStorage.setItem('hysteresis', hysteresis);
 
       const xhr = new XMLHttpRequest();
       xhr.onreadystatechange = function () {
@@ -91,6 +96,7 @@
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
       xhr.send(`sensor1=${sensor1}&sensor2=${sensor2}&sensor3=${sensor3}&sensor4=${sensor4}&sensor5=${sensor5}&sensor6=${sensor6}&sensor7=${sensor7}&sensor8=${sensor8}&hysteresis=${hysteresis}&correction1=${correction1}&correction2=${correction2}&correction3=${correction3}&correction4=${correction4}&correction5=${correction5}&correction6=${correction6}&correction7=${correction7}&correction8=${correction8}`);
       xhr.open("POST", "admin.html", true);
+      alert("address  updated sucessfully!");
     }
 
     function loadLocalPage() {
@@ -100,6 +106,9 @@
 
     // Event listener to trigger the function when the button is clicked
     document.getElementById('loadPageButton').addEventListener('click', loadLocalPage);
+
+    // Attach form submission event listener
+    form.addEventListener('submit', handleFormSubmission);
   </script>
 </body>
 
