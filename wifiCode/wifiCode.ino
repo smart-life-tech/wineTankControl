@@ -18,7 +18,7 @@ IPAddress subnet(255, 255, 0, 0);
 #define ONE_WIRE_BUS 4 // The one-wire bus pin
 #define RELAY_PINS                  \
     {                               \
-         0, 5, 18, 25, 19, 3, 22, 23  \
+        0, 5, 18, 25, 19, 3, 22, 23 \
     } // Example2 relay pins
 
 OneWire oneWire(ONE_WIRE_BUS);
@@ -58,6 +58,15 @@ byte resolutionDS = 12;                   // nastaveni rozliseni cidla
 // const int cidlaDS_i[] = {560, 568, 576, 584, 592, 600, 608, 616};
 const int cidlaDS_i = 560; // prvni adresa EEPROM pro zapis adres cidel
 
+float correction1 = 0.0;
+float correction2 = 0.0;
+float correction3 = 0.0;
+float correction4 = 0.0;
+float correction5 = 0.0;
+float correction6 = 0.0;
+float correction7 = 0.0;
+float correction8 = 0.0;
+float hysteresis = 0.0;
 void printAddress(DeviceAddress deviceAddress)
 {
     for (uint8_t i = 0; i < 8; i++)
@@ -242,16 +251,16 @@ void handleSetAddresses(AsyncWebServerRequest *request)
     String sensor7 = request->arg("sensor7");
     String sensor8 = request->arg("sensor8");
 
-    String hysteresis = request->arg("hysteresis");
+    hysteresis = request->arg("hysteresis").toFloat();
 
-    String correction1 = request->arg("correction1");
-    String correction2 = request->arg("correction2");
-    String correction3 = request->arg("correction3");
-    String correction4 = request->arg("correction4");
-    String correction5 = request->arg("correction5");
-    String correction6 = request->arg("correction6");
-    String correction7 = request->arg("correction7");
-    String correction8 = request->arg("correction8");
+    correction1 = request->arg("correction1").toFloat();
+    correction2 = request->arg("correction2").toFloat();
+    correction3 = request->arg("correction3").toFloat();
+    correction4 = request->arg("correction4").toFloat();
+    correction5 = request->arg("correction5").toFloat();
+    correction6 = request->arg("correction6").toFloat();
+    correction7 = request->arg("correction7").toFloat();
+    correction8 = request->arg("correction8").toFloat();
 
     // Process the data as needed
     // For example, you can save the settings to variables or EEPROM
@@ -530,13 +539,13 @@ void loop()
         Serial.print(desiredTemperatures[i]);
         Serial.println("°C");
 
-        if (currentTemperature > desiredTemperatures[i] && relayMode[i] == 10) // 10 = automatic
+        if (currentTemperature > desiredTemperatures[i] + hysteresis && relayMode[i] == 10) // 10 = automatic
         {
             // Temperature exceeds desired, turn on the relay for modeing or other actions
             digitalWrite(relayPins[i], HIGH);
             cool[i] = "on";
         }
-        else if (currentTemperature < desiredTemperatures[i] && relayMode[i] == 10)
+        else if (currentTemperature < desiredTemperatures[i] - hysteresis && relayMode[i] == 10)
         {
             digitalWrite(relayPins[i], LOW);
             cool[i] = "off";
