@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Admin Page</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body>
+  <h1>Welcome to the Admin Page!</h1>
+  <h2>Set Temperature DS18B20 Addresses:</h2>
+  <form action="/setAddresses" method="POST">
+    <label for="sensor1">Sensor 1 Address:</label>
+    <input type="text" id="sensor1" name="sensor1"><br>
+    <label for="sensor2">Sensor 2 Address:</label>
+    <input type="text" id="sensor2" name="sensor2"><br>
+    <label for="sensor3">Sensor 3 Address:</label>
+    <input type="text" id="sensor3" name="sensor3"><br>
+    <label for="sensor4">Sensor 4 Address:</label>
+    <input type="text" id="sensor4" name="sensor4"><br>
+    <label for="sensor5">Sensor 5 Address:</label>
+    <input type="text" id="sensor5" name="sensor5"><br>
+    <label for="sensor6">Sensor 6 Address:</label>
+    <input type="text" id="sensor6" name="sensor6"><br>
+    <label for="sensor7">Sensor 7 Address:</label>
+    <input type="text" id="sensor7" name="sensor7"><br>
+    <label for="sensor8">Sensor 8 Address:</label>
+    <input type="text" id="sensor8" name="sensor8"><br>
+    
+  </form>
+  <form ction="/setband" method="POST">
+    <label for="deadband">ENTER VARIATION</label>
+    <input type="number" id="deadband" name="deadband" min="0"><br>
+    <input type="submit" value="Set Addresses">
+  </form>
+  
+  <button onclick="loadLocalPage" id="loadPageButton">Login </button>
+  <script>
+    // Function to handle form submission and send the addresses to the ESP32
+    function handleFormSubmission(event) {
+      event.preventDefault();
+      const sensor1 = document.getElementById("sensor1").value;
+      const sensor2 = document.getElementById("sensor2").value;
+      const sensor3 = document.getElementById("sensor3").value;
+      const sensor4 = document.getElementById("sensor4").value;
+      const sensor5 = document.getElementById("sensor5").value;
+      const sensor6 = document.getElementById("sensor6").value;
+      const sensor7 = document.getElementById("sensor7").value;
+      const sensor8 = document.getElementById("sensor8").value;
+      const deadband = document.getElementById("deadband").value;
+      // Send the addresses to the ESP32
+      const xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            alert("Sensor addresses set successfully!");
+          } else {
+            alert("Failed to set sensor addresses.");
+          }
+        }
+      };
+      xhr.open("POST", "/setAddresses", true);
+      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhr.send(`sensor1=${sensor1}&sensor2=${sensor2}&sensor3=${sensor3}&sensor4=${sensor4}&sensor5=${sensor5}&sensor6=${sensor6}&sensor7=${sensor7}&sensor8=${sensor8}&deadband=${deadband}`);
+      xhr.open("POST", "admin.html", true);
+    }
+
+    function loadLocalPage() {
+      // Change the URL to the path of your local page
+      window.location.href = "/";
+    }
+
+    // Event listener to trigger the function when the button is clicked
+    document.getElementById('loadPageButton').addEventListener('click', loadLocalPage);
+
+  </script>
+</body>
+
+</html>

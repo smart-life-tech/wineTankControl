@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>User Page</title>
+    <!-- Favicons -->
+    <link href="static/fav.jpg" rel="icon">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        /* Custom CSS for button hover effect */
+        .card:hover {
+          transform: scale(1.05);
+          transition: transform 0.2s;
+        }
+        .tank-header {
+            font-size: 45px;
+            text-align: center;
+            color: blue;
+          }
+      
+          .tank-temperature-details-up {
+            font-size: 16px;
+            text-align: center;
+          }
+          .tank-temperature-up {
+            font-size: 35px;
+            text-align: center;
+          }
+      
+          .tank-temperature-details-down {
+            font-size: 16px;
+            text-align: center;
+          }
+          .tank-temperature-down {
+            font-size: 25px;
+            text-align: center;
+          }
+          .social-icon {
+            font-size: 24px; /* Adjust the font size as needed */
+            margin-right: 15px; /* Add spacing between icons */
+            color: antiquewhite;
+          }
+      </style>
+      
+  </head>
+  <body>
+    <div class="container p-4 my-5 border" style="background-color: rgba(255, 255, 255, 0.5);">
+        <h3 class="text-center bg-light p-2">Welcome to the User Page!</h3>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4" id="tankContainer">
+        <!-- Tank cards will be generated here dynamically -->
+        </div>
+        <hr>
+        <!-- footer -->
+        <div class="container-fluid text-center text-white" style="background-color: #071bca;">
+             <div class="row">
+                 <div class="col">
+                     <h4>ELITOP</h4>
+                     <h5>KLIMA</h5>
+                 </div>
+                 <div class="col">
+                     <br>
+                     <h5 class="m-0">www.elitop.cz</h5>
+                 </div>
+                 <div class="col">
+                     <br>
+                     <h5 class="m-0">copyright &copy; ELITOP klima s.r.o.</h5>
+                 </div>
+             </div>
+         </div>
+     
+         <!-- footer ends -->
+    </div>
+    <style>
+        body {
+          background-image: url('bg-img.jpg');
+          background-repeat: no-repeat;
+          background-size: cover;
+        }
+      </style>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+    <script>
+
+            // Function to generate tank HTML dynamically
+            function generateTankHTML(id) {
+                return `
+                <div class="col">
+                    <div class="card tank-card" onclick="passValues(${id})" style="cursor: pointer;">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <div class="tank-header" id="tank${id}">TANK ${id}</div>
+                                <div class="tank-temperature-details-up">
+                                    aktualni teplota
+                                </div>
+                                <div class="tank-temperature-up"><span id="set_temperature_value${id}">N/A</span>°C</div>
+                                <p style="text-align: right; color: red" id="switch${id}"></p>
+                                <div style="display: flex; align-items: center;">
+                                    <div style="flex: 1;">
+                                        <div class="tank-temperature-details-down">nastavená teplota</div>
+                                        <div class="tank-temperature-down"><span id="sensor${id}_value">N/A</span>°C</div>
+                                    </div>
+                                    <div>
+                                        <img src="cool.png" alt="cool image" style="width: 30px; height: 30px; margin: 0;" id="cool${id}"/>
+                                    </div>
+                                </div>
+                            </h5>
+                        </div>
+                    </div>
+                </div>`;
+            }
+            
+  
+      // Generate tank HTML and append to the container
+      const tankContainer = document.getElementById('tankContainer');
+      for (let i = 1; i <= 9; i++) {
+        tankContainer.innerHTML += generateTankHTML(i);
+      }
+  
+      // Other JavaScript logic for fetching and updating data
+            function fetchSensorData() {
+                fetch('/updateSet')
+                    .then(response => response.json())
+                    .then(data => updateSensorDataDisplay(data))
+                    .catch(error => console.error('Error fetching sensor data:', error));
+            }
+            function fetchSensorSet() {
+                fetch('/updateData')
+                    .then(response => response.json())
+                    .then(data => updateSensorDataSet(data))
+                    .catch(error => console.error('Error fetching sensor data:', error));
+            }
+            function fetchSwitch() {
+                fetch('/updatePic')
+                    .then(response => response.json())
+                    .then(data => updateSwitch(data))
+                    .catch(error => console.error('Error fetching sensor data:', error));
+            }
+            function fetchMode() {
+                fetch('/updateMode')
+                    .then(response => response.json())
+                    .then(data => updateCoolData(data))
+                    .catch(error => console.error('Error fetching sensor data:', error));
+            }
+    
+    
+            function updateSensorDataSet(data) {
+                for (const sensor in data) {
+                    // const sensorElement = document.getElementById(`sensor${sensor}`);
+    
+                    const sensorElement = document.getElementById(`sensor${sensor.slice(-1)}_value`);
+                    if (sensorElement) {
+                        sensorElement.textContent = data[sensor];
+                        //console.log(sensorElement.textContent);
+                    }
+                }
+            }
+            //========================================================================
+            function updateSensorDataDisplay(data) {
+                for (const sensor in data) {
+                    const sensorElement = document.getElementById(`set_temperature_value${sensor.slice(-1)}`);
+                    if (sensorElement) {
+                        sensorElement.textContent = data[sensor];
+                    }
+    
+                    // Update setTemperatures if the sensor exists
+                    if (setTemperatures[sensor]) {
+                        setTemperatures[sensor] = data[sensor];
+                    }
+                }
+            }
+    
+            //===============================================================
+    
+            // Fetch sensor data initially
+            fetchSensorData();
+            // Fetch sensor data periodically every 5 seconds
+            setInterval(fetchSensorData, 5000);
+            // Fetch sensor data initially and periodically every 5 seconds
+            fetchSensorSet();
+            setInterval(fetchSensorSet, 5000);
+
+
+            //---------------------------------------------------//
+            //switch elements and toggle the display of the cool images
+            //------
+            function updateSwitch(data) {
+                for (let i = 1; i <= 9; i++) {
+                    const switchElement = document.getElementById(`switch${i}`);
+
+                    if (switchElement) {
+                        if (data[`sensor${i}`] === 1) {
+                            switchElement.innerHTML = "A";
+                        } else if (data[`sensor${i}`] === 0) {
+                            switchElement.innerHTML = "M";
+                        } else if (data[`sensor${i}`] === 2) {
+                            switchElement.innerHTML = "<br>"; // This is N, it wont display anything
+                        }
+                    }
+                }
+            }
+
+            function updateCoolData(data) {
+                for (let i = 1; i <= 9; i++) {
+                    const coolImage = document.getElementById(`cool${i}`);
+            
+                    if (coolImage) {
+                        if (data[`sensor${i}`] === 'on') {
+                            coolImage.style.display = 'block';
+                        } else {
+                            coolImage.style.display = 'none';
+                        }
+                    }
+                }
+            }            
+            
+            //============================================================
+    
+            // Fetch Switch data initially
+            fetchSwitch();
+            // Fetch Switch data periodically every 5 seconds
+            setInterval(fetchSwitch, 5000);
+
+            // Fetch mode data initially and periodically every 5 seconds
+            fetchMode();
+            setInterval(fetchMode, 5000);
+            
+            //--------------------------------
+
+            let setTemperatures = {
+                sensor1: "25",
+                sensor2: "26",
+                sensor3: "24",
+                sensor4: "27",
+                sensor5: "23",
+                sensor6: "25",
+                sensor7: "26",
+                sensor9: "28",
+                sensor8: "24"
+            };
+
+            let setSensor = {
+                sensor1: "5",
+                sensor2: "6",
+                sensor3: "4",
+                sensor4: "7",
+                sensor5: "3",
+                sensor6: "5",
+                sensor7: "6",
+                sensor8: "4",
+                sensor9: "5"
+            };
+
+            
+            
+            const jsonSwitch = {
+                sensor1: 1,
+                sensor2: 2,
+                sensor3: 0,
+                sensor4: 1,
+                sensor5: 0,
+                sensor6: 1,
+                sensor7: 0,
+                sensor8: 1,
+                sensor9: 0,
+            };
+            
+            const jsonCool = {
+                sensor1: "on",
+                sensor2: "off",
+                sensor3: "off",
+                sensor4: "on",
+                sensor5: "off",
+                sensor6: "on",
+                sensor7: "off",
+                sensor8: "on",
+                sensor9: "off",
+            };
+
+            updateSensorDataDisplay(setTemperatures);
+            updateSensorDataSet(setSensor);
+            updateSwitch(jsonSwitch);
+            updateCoolData(jsonCool);
+            //------------------------
+
+            function passValues(id) {
+                var setTempValue = document.getElementById(`sensor${id}_value`).innerText;
+                var tankId = document.getElementById(`tank${id}`).innerText;
+                var switchId = document.getElementById(`switch${id}`).innerText;
+            
+                var link = `/tank.html?sensorId=${id}&tankId=${tankId}&switchId=${switchId}&sensorValue=${setTempValue}`;
+                window.location.href = link;
+            }            
+     
+  </script>
+</body>
+</html>

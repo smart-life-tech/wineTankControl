@@ -1,0 +1,125 @@
+/* Common styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-top: 30px;
+}
+
+h2 {
+  text-align: center;
+  color: #666;
+}
+
+form {
+  max-width: 400px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  color: #555;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type="submit"] {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+#loadPageButton {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#loadPageButton:hover {
+  background-color: #0056b3;
+}
+
+h1,
+h2 {
+  color: #333;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+/* Styles for user.html */
+#set_temperatures {
+  margin-bottom: 20px;
+}
+
+/* Styles for admin.html */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+}
+
+.form-group button {
+  padding: 8px 15px;
+}
+
+/* Add more specific styles for your pages if needed */
+#logo-container {
+  max-width: 50px;
+  /* Adjust the width as needed */
+}
+
+#logo-container img {
+  width: 50%;
+  /* Make sure the logo image fills its container */
+  height: auto;
+  /* Maintain the aspect ratio */
+}

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>tank Page</title>
+    <!-- Favicons -->
+    <link href="static/fav.jpg" rel="icon">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        /* Custom CSS for button hover effect */
+        .card:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s;
+        }
+
+        .tank-header {
+            font-size: 45px;
+            text-align: center;
+            color: blue;
+        }
+
+        .tank-temperature-up {
+            font-size: 45px;
+            text-align: center;
+            height: 150px;
+        }
+
+        .enlarged-icon {
+            font-size: 3rem;
+        }
+
+        .custom-btn {
+            margin-bottom: 5px;
+        }
+
+
+        /*
+            .tank-temperature-details-down {
+            font-size: 16px;
+            text-align: center;
+          }
+          .tank-temperature-down {
+            font-size: 25px;
+            text-align: center;
+          }
+          .social-icon {
+            font-size: 24px; 
+            margin-right: 15px; 
+            color: antiquewhite;
+          }
+          */
+    </style>
+
+</head>
+
+<body>
+    <div class="container p-4 my-5 border" style="background-color: rgba(255, 255, 255, 0.5);">
+
+        <div class="row">
+            <div class="col-md-4">
+                <h1 class="text-center p-2 text-primary">
+                    TANK č.
+                    <br>
+                    <span id="sensorIdValue"></span>
+                </h1>
+            </div>
+            <div class="col-md-4">
+                <h1 class="text-center text-danger p-2">
+                    Nastavení teploty
+                </h1>
+            </div>
+            <div class="col-md-4">
+                <h1 class="text-center">
+                    <span style="font-size: 30px;">Vinařství</span>
+                    <br>
+                    VERÝSEK
+                </h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-9">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <div class="tank-temperature-up"
+                            style="display: flex; align-items: center; justify-content: center;">
+                            <span id="SensorValue" style="font-size: 250%;"></span>
+                            <span style="vertical-align: top; font-size: 100%;">°C</span>
+                        </div>
+                    </h4>
+                </div>
+
+                <input type="hidden" id="switchIdValue">
+            </div>
+            <div class="col-md-3 d-flex flex-column justify-content-left align-items-left">
+                <button id="automaticButton" class="btn btn-primary btn-block custom-btn">Automatic</button>
+                <button id="manualButton" class="btn btn-secondary btn-block custom-btn">Manual</button>
+                <button id="neutralButton" class="btn btn-secondary btn-block custom-btn">Neutral</button>
+            </div>
+        </div>
+
+        <div class="row text-center">
+            <div class="col-md-3">
+                <a href="./user.html" style="text-decoration: none; color:black;">
+                    <button class="btn btn-outline-dark">
+                        <i class="bi bi-skip-backward-btn-fill enlarged-icon"></i>
+                    </button>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <button id="add" class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-square-fill enlarged-icon"></i>
+                </button>
+            </div>
+            <div class="col-md-3">
+                <button id="minus" class="btn btn-danger btn-lg">
+                    <i class="bi bi-dash-square-fill enlarged-icon"></i>
+                </button>
+            </div>
+            <div class="col-md-3">
+                <button id="checkButton" class="btn btn-success btn-lg">
+                    <i class="bi bi-check-square-fill enlarged-icon"></i>
+                </button>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- footer -->
+        <div class="container-fluid text-center text-white" style="background-color: #071bca;">
+            <div class="row">
+                <div class="col">
+                    <h4>ELITOP</h4>
+                    <h5>KLIMA</h5>
+                </div>
+                <div class="col">
+                    <br>
+                    <h5 class="m-0">www.elitop.cz</h5>
+                </div>
+                <div class="col">
+                    <br>
+                    <h5 class="m-0">copyright &copy; ELITOP klima s.r.o.</h5>
+                </div>
+            </div>
+        </div>
+
+        <!-- footer ends -->
+    </div>
+
+
+    <style>
+        body {
+            background-image: url('bg-img.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+
+
+    <script>
+        // Parse the URL to get the parameter value
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+
+        // Extract the sensorId, switchId, and sensorValue parameters from the URL
+        const sensorId = urlParams.get('sensorId');
+        const switchId = urlParams.get('switchId');
+        const sensorValue = urlParams.get('sensorValue');
+
+
+        // Display the parsed values
+        document.getElementById('sensorIdValue').textContent = sensorId;
+        document.getElementById('switchIdValue').textContent = switchId;
+        document.getElementById('SensorValue').textContent = sensorValue;
+
+
+        //=====================================================
+        // Function to set mode to Automatic
+        function setAutomaticMode() {
+            document.getElementById('automaticButton').classList.add('btn-primary');
+            document.getElementById('automaticButton').classList.remove('btn-secondary');
+
+            document.getElementById('manualButton').classList.add('btn-secondary');
+            document.getElementById('manualButton').classList.remove('btn-primary');
+
+            document.getElementById('neutralButton').classList.add('btn-secondary');
+            document.getElementById('neutralButton').classList.remove('btn-primary');
+        }
+
+        // Function to set mode to Manual
+        function setManualMode() {
+            document.getElementById('manualButton').classList.add('btn-primary');
+            document.getElementById('manualButton').classList.remove('btn-secondary');
+
+            document.getElementById('automaticButton').classList.add('btn-secondary');
+            document.getElementById('automaticButton').classList.remove('btn-primary');
+
+            document.getElementById('neutralButton').classList.add('btn-secondary');
+            document.getElementById('neutralButton').classList.remove('btn-primary');
+        }
+
+        // Function to set mode to Neutral
+        function setNeutralMode() {
+            document.getElementById('neutralButton').classList.add('btn-primary');
+            document.getElementById('neutralButton').classList.remove('btn-secondary');
+
+            document.getElementById('automaticButton').classList.add('btn-secondary');
+            document.getElementById('automaticButton').classList.remove('btn-primary');
+
+            document.getElementById('manualButton').classList.add('btn-secondary');
+            document.getElementById('manualButton').classList.remove('btn-primary');
+        }
+
+        // Event listeners for the buttons
+        document.getElementById('automaticButton').addEventListener('click', setAutomaticMode);
+        document.getElementById('manualButton').addEventListener('click', setManualMode);
+        document.getElementById('neutralButton').addEventListener('click', setNeutralMode);
+
+        //=============================================
+        let sensorValueNew = document.getElementById('SensorValue').textContent; // Initial sensor value
+
+        // Function to update the sensor value and display it
+        function updateSensorValue() {
+            document.getElementById('SensorValue').textContent = sensorValueNew;
+        }
+
+        // Function to increment the sensor value
+        function increaseSensorValue() {
+            sensorValueNew++;
+            updateSensorValue();
+        }
+
+        // Function to decrement the sensor value
+        function decreaseSensorValue() {
+            if (sensorValueNew > 0) {
+                sensorValueNew--;
+                updateSensorValue();
+            }
+        }
+
+        // Event listeners for the buttons
+        document.getElementById('add').addEventListener('click', increaseSensorValue);
+        document.getElementById('minus').addEventListener('click', decreaseSensorValue);
+
+        //=================================================
+        const switchIdValue = document.getElementById('switchIdValue').textContent;; // Example switchIdValue
+
+        function setButtonState() {
+            const automaticButton = document.getElementById('automaticButton');
+            const manualButton = document.getElementById('manualButton');
+            const neutralButton = document.getElementById('neutralButton');
+
+            automaticButton.classList.remove('btn-success');
+            automaticButton.classList.add('btn-secondary');
+
+            manualButton.classList.remove('btn-success');
+            manualButton.classList.add('btn-secondary');
+
+            neutralButton.classList.remove('btn-success');
+            neutralButton.classList.add('btn-secondary');
+
+            switch (switchIdValue) {
+                case 'A':
+                    automaticButton.classList.remove('btn-secondary');
+                    automaticButton.classList.add('btn-danger');
+                    break;
+                case 'M':
+                    manualButton.classList.remove('btn-secondary');
+                    manualButton.classList.add('btn-danger');
+                    break;
+                default:
+                    neutralButton.classList.remove('btn-secondary');
+                    neutralButton.classList.add('btn-danger');
+                    break;
+            }
+        }
+
+        setButtonState();
+
+        document.getElementById('checkButton').addEventListener('click', function () {
+            const switchIdValue = document.getElementById('switchIdValue').innerText; // A/M/N
+
+            const sensorValue = document.getElementById('SensorValue').innerText;
+
+            const sensorIdValue = document.getElementById('sensorIdValue').innerText; // TANK
+
+            
+            // Send the addresses to the ESP32
+            const xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        alert("Sensor addresses set successfully!");
+                    } else {
+                        alert("Failed to set sensor addresses.");
+                    }
+                }
+            };
+            xhr.open("POST", "/setTank", true);
+            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhr.send(`switchmode=${switchIdValue}&SensorValue=${sensorValue}&Tank=${sensorIdValue}`);
+            xhr.open("POST", "user.html", true);
+            alert('switch mode: ' + switchIdValue + '\nSensor Value: ' + sensorValue + '\nTank: ' + sensorIdValue);
+        });
+
+
+    </script>
+
+</body>
+
+</html>
