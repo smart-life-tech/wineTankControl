@@ -21,6 +21,7 @@ IPAddress subnet(255, 255, 0, 0);
         16, 17, 18, 19, 20, 21, 22, 23 \
     } // Example2 relay pins
 
+
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
