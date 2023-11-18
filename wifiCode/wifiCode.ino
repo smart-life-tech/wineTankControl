@@ -32,6 +32,7 @@ int desiredTemperatures[numRelays];     // Array to store desired temperatures f
 int currentTankTemperatures[numRelays]; // Array to store current temperatures for each tank
 String cool[numRelays];                 // Array to store cool for each tank
 int mode[numRelays];                    // Array to store mode for each tank
+String modes[numRelays];                // Array to store mode for each tank
 int relayMode[numRelays];
 
 EasyNex myNex(Serial2); // Use the correct Serial port and baud rate
@@ -53,6 +54,15 @@ boolean povolCteniTeplot = false;
 byte ID_teploty;                          // ID pro aktualizaci teploty v pripade nastaveni teplot
 unsigned long prodlevaCteniTeplot = 5000; // nastaveni periody cteni teploty
 byte resolutionDS = 12;                   // nastaveni rozliseni cidla
+float correction1 = 0.0;
+float correction2 = 0.0;
+float correction3 = 0.0;
+float correction4 = 0.0;
+float correction5 = 0.0;
+float correction6 = 0.0;
+float correction7 = 0.0;
+float correction8 = 0.0;
+float hysteresis = 0.0;
 //------------------------------------------------------------------
 // pole adres cidel DS 18B20 - 8 pozic dalsi volna adresa 624
 // const int cidlaDS_i[] = {560, 568, 576, 584, 592, 600, 608, 616};
@@ -269,7 +279,21 @@ void handleSetAddresses(AsyncWebServerRequest *request)
     copyAddress(tank6, tanks[5]);
     copyAddress(tank7, tanks[6]);
     copyAddress(tank8, tanks[7]);
+    hysteresis = request->arg("hysteresis").toFloat();
 
+    correction1 = request->arg("correction1").toFloat();
+    correction2 = request->arg("correction2").toFloat();
+    correction3 = request->arg("correction3").toFloat();
+    correction4 = request->arg("correction4").toFloat();
+    correction5 = request->arg("correction5").toFloat();
+    correction6 = request->arg("correction6").toFloat();
+    correction7 = request->arg("correction7").toFloat();
+    correction8 = request->arg("correction8").toFloat();
+
+    // Process the data as needed
+    // For example, you can save the settings to variables or EEPROM
+
+    request->send(200, "text/plain", "Settings saved successfully");
     for (int i = 0; i < 8; i++)
     {
         // Build the argument name for the sensor (e.g., "sensor1", "sensor2", ...)
@@ -478,9 +502,27 @@ void loop()
     for (int i = 0; i < numRelays; i++)
     {
         relayMode[i] = myNex.readNumber("auto" + String(i + 1) + ".val");
-        relayMode[i] = 10;
-        //   Serial.print("relayMode " + String(i)) + " ";
-        // Serial.println(relayMode[i]);
+        // relayMode[i] = 10;
+        Serial.print("relayModes " + String(i)) + "   ";
+        Serial.println(relayMode[i]);
+        if (relayMode[i] == 20) // manual mode
+        {
+            // relayMode[i] = 30;
+            digitalWrite(relayPins[i], HIGH);
+            cool[i] = "on";
+            modes[i] = "M";
+        }
+        else if (relayMode[i] == 30) // nothing set relay off
+        {
+            // relayMode[i] = 10;
+            digitalWrite(relayPins[i], LOW);
+            modes[i] = " ";
+            cool[i] = "off";
+        }
+        else if (relayMode[i] == 10)
+        {
+            modes[i] = "A";
+        }
         delay(300);
     }
     sensors.requestTemperatures(); // Request temperature readings
@@ -488,8 +530,8 @@ void loop()
     for (int i = 0; i < numRelays; i++)
     {
         int currentTemperature = sensors.getTempCByIndex(i);
-        //currentTemperature = random(100);
-        //desiredTemperatures[i] = random(100);
+        // currentTemperature = random(100);
+        // desiredTemperatures[i] = random(100);
         currentTankTemperatures[i] = (currentTemperature);
 
         // Update the current temperature display on Nextion for each tank
@@ -503,34 +545,18 @@ void loop()
         Serial.print(desiredTemperatures[i]);
         Serial.println("°C");
 
-        if (currentTemperature > desiredTemperatures[i] && relayMode[i] == 10) // 10 = automatic
+        if (currentTemperature > desiredTemperatures[i] + hysteresis && relayMode[i] == 10) // 10 = automatic
         {
             // Temperature exceeds desired, turn on the relay for modeing or other actions
             digitalWrite(relayPins[i], HIGH);
             cool[i] = "on";
         }
-        else
+        else if (currentTemperature < desiredTemperatures[i] - hysteresis && relayMode[i] == 10)
         {
             digitalWrite(relayPins[i], LOW);
             cool[i] = "off";
         }
         delay(300);
-        if (relayMode[i] == 20) // manual mode
-        {
-            relayMode[i] = 30;
-            digitalWrite(relayPins[i], HIGH);
-            mode[i] = 0;
-        }
-        else if (relayMode[i] == 30) // nothing set relay off
-        {
-            relayMode[i] = 10;
-            digitalWrite(relayPins[i], LOW);
-            mode[i] = 2;
-        }
-        else if (relayMode[i] == 10)
-        {
-            mode[1] = 1;
-        }
     }
     // EEPROM.commit();/ only for the esp
     delay(1000); // Delay for a second before reading temperatures again
