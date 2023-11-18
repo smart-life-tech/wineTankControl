@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "wineTankControl",
+			"path": ".."
+		},
+		{
+			"name": "data",
+			"path": "../../../PlatformIO/Projects/wineTank/data"
+		}
+	],
+	"settings": {}
+}

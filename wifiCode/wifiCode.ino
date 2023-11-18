@@ -488,8 +488,8 @@ void loop()
     for (int i = 0; i < numRelays; i++)
     {
         int currentTemperature = sensors.getTempCByIndex(i);
-        currentTemperature = random(100);
-        desiredTemperatures[i] = random(100);
+        //currentTemperature = random(100);
+        //desiredTemperatures[i] = random(100);
         currentTankTemperatures[i] = (currentTemperature);
 
         // Update the current temperature display on Nextion for each tank
