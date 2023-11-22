@@ -259,6 +259,8 @@ void handleSetTankMode(AsyncWebServerRequest *request)
         mm = 10;
     else
         mm = 30;
+    myNex.writeNum("sleep", 0);
+    delay(500);
     myNex.writeStr("page 0");
     delay(500);
     myNex.writeNum("t" + String(tank) + "_poz.val", (sensor.toInt()));
