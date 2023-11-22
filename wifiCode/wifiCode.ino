@@ -142,7 +142,8 @@ void handleUpdateData(AsyncWebServerRequest *request)
         }
     }
     response += "}";
-    String responses = "{\"sensor1\": \"" + String(desiredTemperatures[0]) + "\", \"sensor2\": \"" + String(desiredTemperatures[1]) + "\",  \"sensor3\": \"" + String(desiredTemperatures[2]) + "\", \"sensor4\": \"" + String(desiredTemperatures[3]) + "\", \"sensor5\": \"" + String(desiredTemperatures[4]) + "\", \"sensor6\": \"" + String(desiredTemperatures[5]) + "\", \"sensor7\": \"" + String(desiredTemperatures[6]) + "\", \"sensor8\": \"" + String(desiredTemperatures[7]) + "\"}";
+    // String responses = "{\"sensor1\": \"" + String(desiredTemperatures[0]) + "\", \"sensor2\": \"" + String(desiredTemperatures[1]) + "\",  \"sensor3\": \"" + String(desiredTemperatures[2]) + "\", \"sensor4\": \"" + String(desiredTemperatures[3]) + "\", \"sensor5\": \"" + String(desiredTemperatures[4]) + "\", \"sensor6\": \"" + String(desiredTemperatures[5]) + "\", \"sensor7\": \"" + String(desiredTemperatures[6]) + "\", \"sensor8\": \"" + String(desiredTemperatures[7]) + "\"}";
+    String responses = "{\"sensor1\": \"" + String(EEPROM.read(0)) + "\", \"sensor2\": \"" + String(EEPROM.read(1)) + "\",  \"sensor3\": \"" + String(EEPROM.read(2)) + "\", \"sensor4\": \"" + String(EEPROM.read(3)) + "\", \"sensor5\": \"" + String(EEPROM.read(4)) + "\", \"sensor6\": \"" + String(EEPROM.read(5)) + "\", \"sensor7\": \"" + String(EEPROM.read(6)) + "\", \"sensor8\": \"" + String(EEPROM.read(7)) + "\"}";
 
     Serial.println("set data: " + responses);
     request->send(200, "application/json", responses);
@@ -266,7 +267,7 @@ void handleSetTankMode(AsyncWebServerRequest *request)
     myNex.writeNum("t" + String(tank) + "_poz.val", (sensor.toInt()));
     delay(500);
     myNex.writeNum("auto" + String(tank) + ".val", (mm));
-
+    EEPROM.write(tank.toInt() - 1, sensor.toInt());
     // Retrieve other sensor addresses as needed
 }
 
@@ -373,7 +374,7 @@ void setup()
     // }
     // Print ESP32 Local IP Address
     Serial.println(WiFi.localIP());
-    Serial.println("Dallas Temperature IC Control Library Demo");
+    // Serial.println("Dallas Temperature IC Control Library Demo");
     sensors.begin();
     // locate devices on the bus
     Serial.print("Locating devices...");
@@ -574,6 +575,6 @@ void loop()
         }
         delay(300);
     }
-    // EEPROM.commit();/ only for the esp
+    EEPROM.commit();// only for the esp
     delay(1000); // Delay for a second before reading temperatures again
 }
