@@ -21,7 +21,6 @@ IPAddress subnet(255, 255, 0, 0);
         16, 17, 18, 19, 20, 21, 22, 23 \
     } // Example2 relay pins
 
-
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
@@ -252,6 +251,20 @@ void handleSetTankMode(AsyncWebServerRequest *request)
     Serial.println(sensor);
     Serial.print("tank ");
     Serial.println(tank);
+    tank = String(tank.toInt() - 1);
+    int mm;
+    if (mode == "M")
+        mm = 20;
+    else if (mode == "A")
+        mm = 10;
+    else
+        mm = 30;
+    myNex.writeStr("page 0");
+    delay(500);
+    myNex.writeNum("t" + String(tank) + "_poz.val", (sensor.toInt()));
+    delay(500);
+    myNex.writeNum("auto" + String(tank) + ".val", (mm));
+
     // Retrieve other sensor addresses as needed
 }
 
