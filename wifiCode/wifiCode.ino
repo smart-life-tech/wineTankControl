@@ -556,10 +556,10 @@ void loop()
 
         Serial.print("Tank ");
         Serial.print(i + 1);
-        Serial.print(" - Current Temperature v5: ");
+        Serial.print(" - Current Temperature v6: ");
         Serial.print(currentTemperature);
-        Serial.print("°C, Desired Temperature v5: ");
-        Serial.print(desiredTemperatures[i]);
+        Serial.print("°C, Desired Temperature v6: ");
+        Serial.print(EEPROM.read(i));
         Serial.println("°C");
 
         if (currentTemperature > desiredTemperatures[i] + hysteresis && relayMode[i] == 10) // 10 = automatic
@@ -575,6 +575,6 @@ void loop()
         }
         delay(300);
     }
-    EEPROM.commit();// only for the esp
-    delay(1000); // Delay for a second before reading temperatures again
+    EEPROM.commit(); // only for the esp
+    delay(1000);     // Delay for a second before reading temperatures again
 }
