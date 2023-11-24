@@ -553,7 +553,7 @@ void loop()
         Serial.print(desiredTemperatures[i]);
         Serial.println("°C");
         if (readTemp != EEPROM.read(i))
-            EEPROM.write(i, desiredTemperatures[i]);
+           // EEPROM.write(i, desiredTemperatures[i]);
         //}
         delay(300);
     }
