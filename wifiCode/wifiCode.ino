@@ -1,3 +1,4 @@
+// version 10.5
 #include "WiFi.h"
 #include "SPIFFS.h"
 #include "ESPAsyncWebServer.h"
@@ -146,7 +147,7 @@ void handleUpdateData(AsyncWebServerRequest *request)
     // String responses = "{\"sensor1\": \"" + String(desiredTemperatures[0]) + "\", \"sensor2\": \"" + String(desiredTemperatures[1]) + "\",  \"sensor3\": \"" + String(desiredTemperatures[2]) + "\", \"sensor4\": \"" + String(desiredTemperatures[3]) + "\", \"sensor5\": \"" + String(desiredTemperatures[4]) + "\", \"sensor6\": \"" + String(desiredTemperatures[5]) + "\", \"sensor7\": \"" + String(desiredTemperatures[6]) + "\", \"sensor8\": \"" + String(desiredTemperatures[7]) + "\"}";
     String responses = "{\"sensor1\": \"" + String(byte(EEPROM.read(0))) + "\", \"sensor2\": \"" + String(byte(EEPROM.read(1))) + "\",  \"sensor3\": \"" + String(EEPROM.read(2)) + "\", \"sensor4\": \"" + String(EEPROM.read(3)) + "\", \"sensor5\": \"" + String(EEPROM.read(4)) + "\", \"sensor6\": \"" + String(EEPROM.read(5)) + "\", \"sensor7\": \"" + String(EEPROM.read(6)) + "\", \"sensor8\": \"" + String(EEPROM.read(7)) + "\"}";
 
-    //Serial.println("set data: " + responses);
+    // Serial.println("set data: " + responses);
     request->send(200, "application/json", responses);
 }
 
@@ -225,7 +226,8 @@ void handleUpdateMode(AsyncWebServerRequest *request)
         }
     }
     response += "}";
-    String responses = "{\"sensor1\": \"" + String(mode[0]) + "\", \"sensor2\": \"" + String(mode[1]) + "\",  \"sensor3\": \"" + String(mode[2]) + "\", \"sensor4\": \"" + String(mode[3]) + "\", \"sensor5\": \"" + String(mode[4]) + "\", \"sensor6\": \"" + String(mode[5]) + "\", \"sensor7\": \"" + String(mode[6]) + "\", \"sensor8\": \"" + String(mode[7]) + "\"}";
+    EEPROM.commit();
+    String responses = "{\"sensor1\": \"" + String(EEPROM.read(8)) + "\", \"sensor2\": \"" + String(EEPROM.read(9)) + "\",  \"sensor3\": \"" + String(EEPROM.read(10)) + "\", \"sensor4\": \"" + String(EEPROM.read(11)) + "\", \"sensor5\": \"" + String(EEPROM.read(12)) + "\", \"sensor6\": \"" + String(EEPROM.read(12)) + "\", \"sensor7\": \"" + String(EEPROM.read(13)) + "\", \"sensor8\": \"" + String(EEPROM.read(15)) + "\"}";
 
     // Serial.println("mode data: " + responses);
     request->send(200, "application/json", responses);
@@ -282,6 +284,7 @@ void handleSetTankMode(AsyncWebServerRequest *request)
         myNex.writeNum("auto" + String(tank) + ".val", (mm));
 
         EEPROM.write(eepromAddress, byte(sensor.toInt()));
+        EEPROM.write(eepromAddress + 8, byte(mm));
         if (EEPROM.commit())
         {
             Serial.print(byte(EEPROM.read(eepromAddress)));
@@ -409,7 +412,7 @@ void setup()
     // }
     // Print ESP32 Local IP Address
     Serial.println(WiFi.localIP());
-    // Serial.println("Dallas Temperature IC Control Library Demo");
+    Serial.println("Dallas Temperature IC Control Library Demo");
     sensors.begin();
     // locate devices on the bus
     Serial.print("Locating devices...");
@@ -456,7 +459,7 @@ void setup()
     }
     for (int i = 0; i < numRelays; i++)
     {
-        desiredTemperatures[i] = EEPROM.read(i);
+        desiredTemperatures[i] = EEPROM.read(i + 8);
     }
     // Initialize SPIFFS and connect to WiFi
     if (!SPIFFS.begin(true))
@@ -483,7 +486,7 @@ void setup()
     macAdd.toCharArray(apNames, 30);
     Serial.println(apNames);
     // wifiManager.autoConnect(apNames);
-    res = wifiManager.autoConnect(apNames); // password protected ap
+    res = wifiManager.autoConnect(apNames, "password", 10, 1000); // password protected ap
 
     if (!res)
     {
@@ -543,21 +546,24 @@ void loop()
     for (int i = 0; i < numRelays; i++)
     {
         int readTemp = myNex.readNumber("t" + String(i + 1) + "_poz.val");
-        if (readTemp < 500 && readTemp != 0)
-        {
-            desiredTemperatures[i] = readTemp;
-            // if (readTemp != EEPROM.read(i))
-            // EEPROM.write(i, desiredTemperatures[i]);
-        }
+        // if (readTemp < 500)
+        // {
+        desiredTemperatures[i] = readTemp;
+        Serial.print("Desired Temperature v10: ");
+        Serial.print(desiredTemperatures[i]);
+        Serial.println("°C");
+        if (readTemp != EEPROM.read(i))
+            EEPROM.write(i, desiredTemperatures[i]);
+        //}
         delay(300);
     }
-    for (int i = 0; i < numRelays; i++)
+    for (int i = 8; i < numRelays + 8; i++)
     {
         relayMode[i] = myNex.readNumber("auto" + String(i + 1) + ".val");
         // relayMode[i] = 10;
-         Serial.print("relayModes " + String(i)) + "   ";
-         Serial.print(" ");
-         Serial.println(relayMode[i]);
+        Serial.print("relayModes " + String(i)) + "   ";
+        Serial.print(" ");
+        Serial.println(relayMode[i]);
         if (relayMode[i] == 20) // manual mode
         {
             // relayMode[i] = 30;
@@ -583,22 +589,19 @@ void loop()
     for (int i = 0; i < numRelays; i++)
     {
         int currentTemperature = sensors.getTempCByIndex(i);
-        // currentTemperature = random(100);
+        //currentTemperature = random(100);
         // desiredTemperatures[i] = random(100);
-        currentTankTemperatures[i] = (currentTemperature);
+         currentTankTemperatures[i] = (currentTemperature);
 
         // Update the current temperature display on Nextion for each tank
         myNex.writeNum("t" + String(i + 1) + "_akt.val", (currentTemperature));
-        /*
-                Serial.print("Tank ");
-                Serial.print(i + 1);
-                Serial.print(" - Current Temperature v6: ");
-                Serial.print(currentTemperature);
-                Serial.print("°C, Desired Temperature v6: ");
-                Serial.print(desiredTemperatures[i]);
-                Serial.println("°C");
-        */
-        if (currentTemperature > desiredTemperatures[i] + hysteresis && relayMode[i] == 10) // 10 = automatic
+
+        Serial.print("Tank ");
+        Serial.print(i + 1);
+        Serial.print(" - Current Temperature v5: ");
+        Serial.println(currentTemperature);
+
+        if (currentTemperature > desiredTemperatures[i] && relayMode[i] == 10) // 10 = automatic
         {
             // Temperature exceeds desired, turn on the relay for modeing or other actions
             digitalWrite(relayPins[i], HIGH);
