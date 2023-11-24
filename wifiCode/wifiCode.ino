@@ -268,6 +268,7 @@ void handleSetTankMode(AsyncWebServerRequest *request)
     delay(500);
     myNex.writeNum("auto" + String(tank) + ".val", (mm));
     EEPROM.write(tank.toInt() - 1, sensor.toInt());
+    EEPROM.commit();
     // Retrieve other sensor addresses as needed
 }
 
@@ -508,7 +509,7 @@ void loop()
     for (int i = 0; i < numRelays; i++)
     {
         int readTemp = myNex.readNumber("t" + String(i + 1) + "_poz.val");
-        if (readTemp < 500)
+        if (readTemp < 500 && readTemp != 0)
         {
             desiredTemperatures[i] = readTemp;
             if (readTemp != EEPROM.read(i))
@@ -559,7 +560,7 @@ void loop()
         Serial.print(" - Current Temperature v6: ");
         Serial.print(currentTemperature);
         Serial.print("°C, Desired Temperature v6: ");
-        Serial.print(EEPROM.read(i));
+        Serial.print(desiredTemperatures[i]);
         Serial.println("°C");
 
         if (currentTemperature > desiredTemperatures[i] + hysteresis && relayMode[i] == 10) // 10 = automatic
