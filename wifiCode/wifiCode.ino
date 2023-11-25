@@ -391,6 +391,18 @@ void setup()
 {
 
     Serial.begin(115200);
+    if (!EEPROM.begin(64))
+    {
+        Serial.println("failed to initialise EEPROM");
+        delay(1000000);
+    }
+    Serial.println(" bytes read from Flash . Values are:");
+    for (int i = 0; i < 64; i++)
+    {
+        Serial.print(byte(EEPROM.read(i)));
+        Serial.print(" ");
+    }
+    Serial.println();
     // Configures static IP address
     // if (!WiFi.config(local_IP, gateway, subnet))
     //  {
@@ -546,10 +558,26 @@ void loop()
     for (int i = 0; i < numRelays; i++)
     {
         relayMode[i] = myNex.readNumber("auto" + String(i + 1) + ".val");
-        //Serial.print("relayMode " + String(i)) + " ";
-        //Serial.println(relayMode[i]);
-        delay(300);
+        if (relayMode[i] == 20) // manual mode
+        {
+            if (relayMode[i] != EEPROM.read(i + 8))
+                EEPROM.write(i + 8, relayMode[i]);
+        }
+        else if (relayMode[i] == 30) // nothing set relay off
+        {
+            if (relayMode[i] != EEPROM.read(i + 8))
+                EEPROM.write(i + 8, relayMode[i]);
+        }
+        else if (relayMode[i] == 10) // auto
+        {
+            if (relayMode[i] != EEPROM.read(i + 8))
+                EEPROM.write(i + 8, relayMode[i]);
+        }
     }
+    // Serial.print("relayMode " + String(i)) + " ";
+    // Serial.println(relayMode[i]);
+    delay(300);
+
     sensors.requestTemperatures(); // Request temperature readings
 
     for (int i = 0; i < numRelays; i++)
