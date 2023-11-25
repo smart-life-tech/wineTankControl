@@ -1,4 +1,4 @@
-// version 10.5
+// version 10.51
 #include "WiFi.h"
 #include "SPIFFS.h"
 #include "ESPAsyncWebServer.h"
@@ -31,6 +31,9 @@ const int numRelays = 8;
 int relayPins[numRelays] = RELAY_PINS;
 int desiredTemperatures[numRelays];     // Array to store desired temperatures for each tank
 int currentTankTemperatures[numRelays]; // Array to store current temperatures for each tank
+String cool[numRelays];                 // Array to store cool for each tank
+int mode[numRelays];                    // Array to store mode for each tank
+String modes[numRelays];                // Array to store mode for each tank
 int relayMode[numRelays];
 
 EasyNex myNex(Serial2); // Use the correct Serial port and baud rate
@@ -52,6 +55,15 @@ boolean povolCteniTeplot = false;
 byte ID_teploty;                          // ID pro aktualizaci teploty v pripade nastaveni teplot
 unsigned long prodlevaCteniTeplot = 5000; // nastaveni periody cteni teploty
 byte resolutionDS = 12;                   // nastaveni rozliseni cidla
+float correction1 = 0.0;
+float correction2 = 0.0;
+float correction3 = 0.0;
+float correction4 = 0.0;
+float correction5 = 0.0;
+float correction6 = 0.0;
+float correction7 = 0.0;
+float correction8 = 0.0;
+float hysteresis = 0.0;
 //------------------------------------------------------------------
 // pole adres cidel DS 18B20 - 8 pozic dalsi volna adresa 624
 // const int cidlaDS_i[] = {560, 568, 576, 584, 592, 600, 608, 616};
@@ -160,7 +172,62 @@ void handleUpdateSet(AsyncWebServerRequest *request)
     response += "}";
     String responses = "{\"sensor1\": \"" + String(currentTankTemperatures[0]) + "\", \"sensor2\": \"" + String(currentTankTemperatures[1]) + "\",  \"sensor3\": \"" + String(currentTankTemperatures[2]) + "\", \"sensor4\": \"" + String(currentTankTemperatures[3]) + "\", \"sensor5\": \"" + String(currentTankTemperatures[4]) + "\", \"sensor6\": \"" + String(currentTankTemperatures[5]) + "\", \"sensor7\": \"" + String(currentTankTemperatures[6]) + "\", \"sensor8\": \"" + String(currentTankTemperatures[7]) + "\"}";
 
-    Serial.println("current data: " + responses);
+    // Serial.println("current data: " + responses);
+    request->send(200, "application/json", responses);
+}
+
+void handleUpdateCool(AsyncWebServerRequest *request)
+{
+    // Assuming you have an array cool with the temperature data for 8 sensors
+
+    String sensorData[8];
+
+    for (int i = 0; i < 8; i++)
+    {
+        sensorData[i] = "sensor" + String(i + 1) + ": " + String(cool[i]);
+    }
+    // Build the JSON response
+    String response = "{";
+    for (int i = 0; i < 8; i++)
+    {
+        response += "\"" + sensorData[i] + "\"";
+        if (i < 7)
+        {
+            response += ",";
+        }
+    }
+    response += "}";
+    String responses = "{\"sensor1\": \"" + String(cool[0]) + "\", \"sensor2\": \"" + String(cool[1]) + "\",  \"sensor3\": \"" + String(cool[2]) + "\", \"sensor4\": \"" + String(cool[3]) + "\", \"sensor5\": \"" + String(cool[4]) + "\", \"sensor6\": \"" + String(cool[5]) + "\", \"sensor7\": \"" + String(cool[6]) + "\", \"sensor8\": \"" + String(cool[7]) + "\"}";
+
+    // Serial.println("cool data: " + responses);
+    request->send(200, "application/json", responses);
+}
+
+void handleUpdateMode(AsyncWebServerRequest *request)
+{
+    // Assuming you have an array mode with the temperature data for 8 sensors
+
+    String sensorData[8];
+
+    for (int i = 0; i < 8; i++)
+    {
+        sensorData[i] = "sensor" + String(i + 1) + ": " + String(mode[i]);
+    }
+    // Build the JSON response
+    String response = "{";
+    for (int i = 0; i < 8; i++)
+    {
+        response += "\"" + sensorData[i] + "\"";
+        if (i < 7)
+        {
+            response += ",";
+        }
+    }
+    response += "}";
+    EEPROM.commit();
+    String responses = "{\"sensor1\": \"" + String(EEPROM.read(8)) + "\", \"sensor2\": \"" + String(EEPROM.read(9)) + "\",  \"sensor3\": \"" + String(EEPROM.read(10)) + "\", \"sensor4\": \"" + String(EEPROM.read(11)) + "\", \"sensor5\": \"" + String(EEPROM.read(12)) + "\", \"sensor6\": \"" + String(EEPROM.read(12)) + "\", \"sensor7\": \"" + String(EEPROM.read(13)) + "\", \"sensor8\": \"" + String(EEPROM.read(15)) + "\"}";
+
+    // Serial.println("mode data: " + responses);
     request->send(200, "application/json", responses);
 }
 
@@ -173,6 +240,59 @@ void handleGetIPAddress(AsyncWebServerRequest *request)
 void handleAdminPage(AsyncWebServerRequest *request)
 {
     request->send(SPIFFS, "/admin.html", "text/html");
+}
+
+void handleSetTankMode(AsyncWebServerRequest *request)
+{
+    String mode = request->arg("switchmode");
+    String sensor = request->arg("SensorValue");
+    String tank = request->arg("Tank");
+    Serial.print("mode ");
+    Serial.println(mode);
+    Serial.print("sensor ");
+    Serial.println(sensor);
+    Serial.print("tank ");
+    Serial.println(tank);
+
+    // Ensure the EEPROM address is within the valid range
+    int eepromAddress = tank.toInt() - 1;
+    if (eepromAddress < 0 || eepromAddress >= 64)
+    {
+        // Handle invalid EEPROM address
+        Serial.println("Invalid EEPROM address");
+    }
+    else
+    {
+        tank = String(eepromAddress);
+
+        int mm;
+        if (mode == "M")
+            mm = 20;
+        else if (mode == "A")
+            mm = 10;
+        else
+            mm = 30;
+
+        myNex.writeNum("sleep", 0);
+        delay(500);
+        myNex.writeStr("page 0");
+        delay(500);
+        myNex.writeNum("t" + String(tank) + "_poz.val", (sensor.toInt()));
+        delay(500);
+        myNex.writeNum("auto" + String(tank) + ".val", (mm));
+
+        EEPROM.write(eepromAddress, byte(sensor.toInt()));
+        EEPROM.write(eepromAddress + 8, byte(mm));
+        if (EEPROM.commit())
+        {
+            Serial.print(byte(EEPROM.read(eepromAddress)));
+            Serial.println("  written success");
+        }
+        else
+        {
+            Serial.println("EEPROM write failed");
+        }
+    }
 }
 
 void handleSetAddresses(AsyncWebServerRequest *request)
@@ -200,7 +320,21 @@ void handleSetAddresses(AsyncWebServerRequest *request)
     copyAddress(tank6, tanks[5]);
     copyAddress(tank7, tanks[6]);
     copyAddress(tank8, tanks[7]);
+    hysteresis = request->arg("hysteresis").toFloat();
 
+    correction1 = request->arg("correction1").toFloat();
+    correction2 = request->arg("correction2").toFloat();
+    correction3 = request->arg("correction3").toFloat();
+    correction4 = request->arg("correction4").toFloat();
+    correction5 = request->arg("correction5").toFloat();
+    correction6 = request->arg("correction6").toFloat();
+    correction7 = request->arg("correction7").toFloat();
+    correction8 = request->arg("correction8").toFloat();
+
+    // Process the data as needed
+    // For example, you can save the settings to variables or EEPROM
+
+    request->send(200, "text/plain", "Settings saved successfully");
     for (int i = 0; i < 8; i++)
     {
         // Build the argument name for the sensor (e.g., "sensor1", "sensor2", ...)
@@ -357,12 +491,18 @@ void setup()
               { request->send(SPIFFS, "/index.html", String(), false, processor); });
 
     // Route to load style.css file
-    server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
-              { request->send(SPIFFS, "/style.css", "text/css"); });
+    server.on("/styles.css", HTTP_GET, [](AsyncWebServerRequest *request)
+              { request->send(SPIFFS, "/styles.css", "text/css"); });
+    server.on("/bg-img.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
+              { request->send(SPIFFS, "/bg-img.jpg", "image/jpg"); });
+    server.on("/cool.png", HTTP_GET, [](AsyncWebServerRequest *request)
+              { request->send(SPIFFS, "/cool.png", "image/png"); });
     // Set up server handlers
     server.on("/admin.html", HTTP_GET, [](AsyncWebServerRequest *request)
               { request->send(SPIFFS, "/admin.html", String(), false, processor); });
 
+    server.on("/tank.html", HTTP_GET, [](AsyncWebServerRequest *request)
+              { request->send(SPIFFS, "/tank.html", String(), false, processor); });
     // Serve the User Page
     server.on("/user.html", HTTP_GET, [](AsyncWebServerRequest *request)
               { request->send(SPIFFS, "/user.html", "text/html"); });
@@ -375,6 +515,10 @@ void setup()
     server.on("/getIpAddress", HTTP_GET, handleGetIPAddress);
     server.on("/setAddresses", HTTP_POST, handleSetAddresses);
     server.on("/updateSet", HTTP_GET, handleUpdateSet);
+    server.on("/updateCool", HTTP_GET, handleUpdateCool);
+    server.on("/updateMode", HTTP_GET, handleUpdateMode);
+    server.on("/setTank", HTTP_POST, handleSetTankMode);
+    // server.serveStatic("/", SPIFFS, "/");
 
     // Start the server
     server.begin();
