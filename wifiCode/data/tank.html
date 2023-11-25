@@ -292,7 +292,7 @@
 
             const sensorIdValue = document.getElementById('sensorIdValue').innerText; // TANK
 
-            
+
             // Send the addresses to the ESP32
             const xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
@@ -309,6 +309,7 @@
             xhr.send(`switchmode=${switchIdValue}&SensorValue=${sensorValue}&Tank=${sensorIdValue}`);
             xhr.open("POST", "user.html", true);
             alert('switch mode: ' + switchIdValue + '\nSensor Value: ' + sensorValue + '\nTank: ' + sensorIdValue);
+            window.location.href = "user.html";
         });
 
 

@@ -532,22 +532,22 @@ void loop()
     for (int i = 0; i < numRelays; i++)
     {
         int readTemp = myNex.readNumber("t" + String(i + 1) + "_poz.val");
-        // if (readTemp < 500)
-        // {
-        desiredTemperatures[i] = readTemp;
-        Serial.print("Desired Temperature v10: ");
-        Serial.print(desiredTemperatures[i]);
-        Serial.println("°C");
-        if (readTemp != EEPROM.read(i))
-            EEPROM.write(i, desiredTemperatures[i]);
-        //}
+        if (readTemp < 500)
+        {
+            desiredTemperatures[i] = readTemp;
+            Serial.print("Desired Temperature v10: ");
+            Serial.print(desiredTemperatures[i]);
+            Serial.println("°C");
+            if (readTemp != EEPROM.read(i))
+                EEPROM.write(i, desiredTemperatures[i]);
+        }
         delay(300);
     }
     for (int i = 0; i < numRelays; i++)
     {
         relayMode[i] = myNex.readNumber("auto" + String(i + 1) + ".val");
-        //   Serial.print("relayMode " + String(i)) + " ";
-        // Serial.println(relayMode[i]);
+        //Serial.print("relayMode " + String(i)) + " ";
+        //Serial.println(relayMode[i]);
         delay(300);
     }
     sensors.requestTemperatures(); // Request temperature readings
