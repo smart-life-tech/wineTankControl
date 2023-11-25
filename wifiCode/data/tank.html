@@ -308,7 +308,7 @@
             xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhr.send(`switchmode=${switchIdValue}&SensorValue=${sensorValue}&Tank=${sensorIdValue}`);
             xhr.open("POST", "user.html", true);
-            alert('switch mode: ' + switchIdValue + '\nSensor Value: ' + sensorValue + '\nTank: ' + sensorIdValue);
+            //alert('switch mode: ' + switchIdValue + '\nSensor Value: ' + sensorValue + '\nTank: ' + sensorIdValue);
             window.location.href = "user.html";
         });
 
