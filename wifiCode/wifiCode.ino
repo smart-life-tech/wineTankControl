@@ -17,9 +17,9 @@ IPAddress gateway(192, 168, 1, 1);
 
 IPAddress subnet(255, 255, 0, 0);
 #define ONE_WIRE_BUS 4 // The one-wire bus pin
-#define RELAY_PINS                     \
-    {                                  \
-        16, 17, 18, 19, 20, 21, 22, 23 \
+#define RELAY_PINS                  \
+    {                               \
+        0, 5, 18, 25, 19, 3, 18, 18 \
     } // Example2 relay pins
 
 OneWire oneWire(ONE_WIRE_BUS);
@@ -31,9 +31,6 @@ const int numRelays = 8;
 int relayPins[numRelays] = RELAY_PINS;
 int desiredTemperatures[numRelays];     // Array to store desired temperatures for each tank
 int currentTankTemperatures[numRelays]; // Array to store current temperatures for each tank
-String cool[numRelays];                 // Array to store cool for each tank
-int mode[numRelays];                    // Array to store mode for each tank
-String modes[numRelays];                // Array to store mode for each tank
 int relayMode[numRelays];
 
 EasyNex myNex(Serial2); // Use the correct Serial port and baud rate
@@ -55,15 +52,6 @@ boolean povolCteniTeplot = false;
 byte ID_teploty;                          // ID pro aktualizaci teploty v pripade nastaveni teplot
 unsigned long prodlevaCteniTeplot = 5000; // nastaveni periody cteni teploty
 byte resolutionDS = 12;                   // nastaveni rozliseni cidla
-float correction1 = 0.0;
-float correction2 = 0.0;
-float correction3 = 0.0;
-float correction4 = 0.0;
-float correction5 = 0.0;
-float correction6 = 0.0;
-float correction7 = 0.0;
-float correction8 = 0.0;
-float hysteresis = 0.0;
 //------------------------------------------------------------------
 // pole adres cidel DS 18B20 - 8 pozic dalsi volna adresa 624
 // const int cidlaDS_i[] = {560, 568, 576, 584, 592, 600, 608, 616};
@@ -143,11 +131,9 @@ void handleUpdateData(AsyncWebServerRequest *request)
         }
     }
     response += "}";
-    EEPROM.commit();
-    // String responses = "{\"sensor1\": \"" + String(desiredTemperatures[0]) + "\", \"sensor2\": \"" + String(desiredTemperatures[1]) + "\",  \"sensor3\": \"" + String(desiredTemperatures[2]) + "\", \"sensor4\": \"" + String(desiredTemperatures[3]) + "\", \"sensor5\": \"" + String(desiredTemperatures[4]) + "\", \"sensor6\": \"" + String(desiredTemperatures[5]) + "\", \"sensor7\": \"" + String(desiredTemperatures[6]) + "\", \"sensor8\": \"" + String(desiredTemperatures[7]) + "\"}";
-    String responses = "{\"sensor1\": \"" + String(byte(EEPROM.read(0))) + "\", \"sensor2\": \"" + String(byte(EEPROM.read(1))) + "\",  \"sensor3\": \"" + String(EEPROM.read(2)) + "\", \"sensor4\": \"" + String(EEPROM.read(3)) + "\", \"sensor5\": \"" + String(EEPROM.read(4)) + "\", \"sensor6\": \"" + String(EEPROM.read(5)) + "\", \"sensor7\": \"" + String(EEPROM.read(6)) + "\", \"sensor8\": \"" + String(EEPROM.read(7)) + "\"}";
+    String responses = "{\"sensor1\": \"" + String(desiredTemperatures[0]) + "\", \"sensor2\": \"" + String(desiredTemperatures[1]) + "\",  \"sensor3\": \"" + String(desiredTemperatures[2]) + "\", \"sensor4\": \"" + String(desiredTemperatures[3]) + "\", \"sensor5\": \"" + String(desiredTemperatures[4]) + "\", \"sensor6\": \"" + String(desiredTemperatures[5]) + "\", \"sensor7\": \"" + String(desiredTemperatures[6]) + "\", \"sensor8\": \"" + String(desiredTemperatures[7]) + "\"}";
 
-    // Serial.println("set data: " + responses);
+    Serial.println("set data: " + responses);
     request->send(200, "application/json", responses);
 }
 
@@ -174,62 +160,7 @@ void handleUpdateSet(AsyncWebServerRequest *request)
     response += "}";
     String responses = "{\"sensor1\": \"" + String(currentTankTemperatures[0]) + "\", \"sensor2\": \"" + String(currentTankTemperatures[1]) + "\",  \"sensor3\": \"" + String(currentTankTemperatures[2]) + "\", \"sensor4\": \"" + String(currentTankTemperatures[3]) + "\", \"sensor5\": \"" + String(currentTankTemperatures[4]) + "\", \"sensor6\": \"" + String(currentTankTemperatures[5]) + "\", \"sensor7\": \"" + String(currentTankTemperatures[6]) + "\", \"sensor8\": \"" + String(currentTankTemperatures[7]) + "\"}";
 
-    // Serial.println("current data: " + responses);
-    request->send(200, "application/json", responses);
-}
-
-void handleUpdateCool(AsyncWebServerRequest *request)
-{
-    // Assuming you have an array cool with the temperature data for 8 sensors
-
-    String sensorData[8];
-
-    for (int i = 0; i < 8; i++)
-    {
-        sensorData[i] = "sensor" + String(i + 1) + ": " + String(cool[i]);
-    }
-    // Build the JSON response
-    String response = "{";
-    for (int i = 0; i < 8; i++)
-    {
-        response += "\"" + sensorData[i] + "\"";
-        if (i < 7)
-        {
-            response += ",";
-        }
-    }
-    response += "}";
-    String responses = "{\"sensor1\": \"" + String(cool[0]) + "\", \"sensor2\": \"" + String(cool[1]) + "\",  \"sensor3\": \"" + String(cool[2]) + "\", \"sensor4\": \"" + String(cool[3]) + "\", \"sensor5\": \"" + String(cool[4]) + "\", \"sensor6\": \"" + String(cool[5]) + "\", \"sensor7\": \"" + String(cool[6]) + "\", \"sensor8\": \"" + String(cool[7]) + "\"}";
-
-    // Serial.println("cool data: " + responses);
-    request->send(200, "application/json", responses);
-}
-
-void handleUpdateMode(AsyncWebServerRequest *request)
-{
-    // Assuming you have an array mode with the temperature data for 8 sensors
-
-    String sensorData[8];
-
-    for (int i = 0; i < 8; i++)
-    {
-        sensorData[i] = "sensor" + String(i + 1) + ": " + String(mode[i]);
-    }
-    // Build the JSON response
-    String response = "{";
-    for (int i = 0; i < 8; i++)
-    {
-        response += "\"" + sensorData[i] + "\"";
-        if (i < 7)
-        {
-            response += ",";
-        }
-    }
-    response += "}";
-    EEPROM.commit();
-    String responses = "{\"sensor1\": \"" + String(EEPROM.read(8)) + "\", \"sensor2\": \"" + String(EEPROM.read(9)) + "\",  \"sensor3\": \"" + String(EEPROM.read(10)) + "\", \"sensor4\": \"" + String(EEPROM.read(11)) + "\", \"sensor5\": \"" + String(EEPROM.read(12)) + "\", \"sensor6\": \"" + String(EEPROM.read(12)) + "\", \"sensor7\": \"" + String(EEPROM.read(13)) + "\", \"sensor8\": \"" + String(EEPROM.read(15)) + "\"}";
-
-    // Serial.println("mode data: " + responses);
+    Serial.println("current data: " + responses);
     request->send(200, "application/json", responses);
 }
 
@@ -242,59 +173,6 @@ void handleGetIPAddress(AsyncWebServerRequest *request)
 void handleAdminPage(AsyncWebServerRequest *request)
 {
     request->send(SPIFFS, "/admin.html", "text/html");
-}
-
-void handleSetTankMode(AsyncWebServerRequest *request)
-{
-    String mode = request->arg("switchmode");
-    String sensor = request->arg("SensorValue");
-    String tank = request->arg("Tank");
-    Serial.print("mode ");
-    Serial.println(mode);
-    Serial.print("sensor ");
-    Serial.println(sensor);
-    Serial.print("tank ");
-    Serial.println(tank);
-
-    // Ensure the EEPROM address is within the valid range
-    int eepromAddress = tank.toInt() - 1;
-    if (eepromAddress < 0 || eepromAddress >= 64)
-    {
-        // Handle invalid EEPROM address
-        Serial.println("Invalid EEPROM address");
-    }
-    else
-    {
-        tank = String(eepromAddress);
-
-        int mm;
-        if (mode == "M")
-            mm = 20;
-        else if (mode == "A")
-            mm = 10;
-        else
-            mm = 30;
-
-        myNex.writeNum("sleep", 0);
-        delay(500);
-        myNex.writeStr("page 0");
-        delay(500);
-        myNex.writeNum("t" + String(tank) + "_poz.val", (sensor.toInt()));
-        delay(500);
-        myNex.writeNum("auto" + String(tank) + ".val", (mm));
-
-        EEPROM.write(eepromAddress, byte(sensor.toInt()));
-        EEPROM.write(eepromAddress + 8, byte(mm));
-        if (EEPROM.commit())
-        {
-            Serial.print(byte(EEPROM.read(eepromAddress)));
-            Serial.println("  written success");
-        }
-        else
-        {
-            Serial.println("EEPROM write failed");
-        }
-    }
 }
 
 void handleSetAddresses(AsyncWebServerRequest *request)
@@ -322,21 +200,7 @@ void handleSetAddresses(AsyncWebServerRequest *request)
     copyAddress(tank6, tanks[5]);
     copyAddress(tank7, tanks[6]);
     copyAddress(tank8, tanks[7]);
-    hysteresis = request->arg("hysteresis").toFloat();
 
-    correction1 = request->arg("correction1").toFloat();
-    correction2 = request->arg("correction2").toFloat();
-    correction3 = request->arg("correction3").toFloat();
-    correction4 = request->arg("correction4").toFloat();
-    correction5 = request->arg("correction5").toFloat();
-    correction6 = request->arg("correction6").toFloat();
-    correction7 = request->arg("correction7").toFloat();
-    correction8 = request->arg("correction8").toFloat();
-
-    // Process the data as needed
-    // For example, you can save the settings to variables or EEPROM
-
-    request->send(200, "text/plain", "Settings saved successfully");
     for (int i = 0; i < 8; i++)
     {
         // Build the argument name for the sensor (e.g., "sensor1", "sensor2", ...)
@@ -393,18 +257,6 @@ void setup()
 {
 
     Serial.begin(115200);
-    if (!EEPROM.begin(64))
-    {
-        Serial.println("failed to initialise EEPROM");
-        delay(1000000);
-    }
-    Serial.println(" bytes read from Flash . Values are:");
-    for (int i = 0; i < 64; i++)
-    {
-        Serial.print(byte(EEPROM.read(i)));
-        Serial.print(" ");
-    }
-    Serial.println();
     // Configures static IP address
     // if (!WiFi.config(local_IP, gateway, subnet))
     //  {
@@ -459,7 +311,7 @@ void setup()
     }
     for (int i = 0; i < numRelays; i++)
     {
-        desiredTemperatures[i] = EEPROM.read(i + 8);
+        desiredTemperatures[i] = EEPROM.read(i);
     }
     // Initialize SPIFFS and connect to WiFi
     if (!SPIFFS.begin(true))
@@ -505,18 +357,12 @@ void setup()
               { request->send(SPIFFS, "/index.html", String(), false, processor); });
 
     // Route to load style.css file
-    server.on("/styles.css", HTTP_GET, [](AsyncWebServerRequest *request)
-              { request->send(SPIFFS, "/styles.css", "text/css"); });
-    server.on("/bg-img.jpg", HTTP_GET, [](AsyncWebServerRequest *request)
-              { request->send(SPIFFS, "/bg-img.jpg", "image/jpg"); });
-    server.on("/cool.png", HTTP_GET, [](AsyncWebServerRequest *request)
-              { request->send(SPIFFS, "/cool.png", "image/png"); });
+    server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
+              { request->send(SPIFFS, "/style.css", "text/css"); });
     // Set up server handlers
     server.on("/admin.html", HTTP_GET, [](AsyncWebServerRequest *request)
               { request->send(SPIFFS, "/admin.html", String(), false, processor); });
 
-    server.on("/tank.html", HTTP_GET, [](AsyncWebServerRequest *request)
-              { request->send(SPIFFS, "/tank.html", String(), false, processor); });
     // Serve the User Page
     server.on("/user.html", HTTP_GET, [](AsyncWebServerRequest *request)
               { request->send(SPIFFS, "/user.html", "text/html"); });
@@ -529,10 +375,6 @@ void setup()
     server.on("/getIpAddress", HTTP_GET, handleGetIPAddress);
     server.on("/setAddresses", HTTP_POST, handleSetAddresses);
     server.on("/updateSet", HTTP_GET, handleUpdateSet);
-    server.on("/updateCool", HTTP_GET, handleUpdateCool);
-    server.on("/updateMode", HTTP_GET, handleUpdateMode);
-    server.on("/setTank", HTTP_POST, handleSetTankMode);
-    // server.serveStatic("/", SPIFFS, "/");
 
     // Start the server
     server.begin();
@@ -553,35 +395,15 @@ void loop()
         Serial.print(desiredTemperatures[i]);
         Serial.println("°C");
         if (readTemp != EEPROM.read(i))
-           // EEPROM.write(i, desiredTemperatures[i]);
+            EEPROM.write(i, desiredTemperatures[i]);
         //}
         delay(300);
     }
-    for (int i = 8; i < numRelays + 8; i++)
+    for (int i = 0; i < numRelays; i++)
     {
         relayMode[i] = myNex.readNumber("auto" + String(i + 1) + ".val");
-        // relayMode[i] = 10;
-        Serial.print("relayModes " + String(i)) + "   ";
-        Serial.print(" ");
-        Serial.println(relayMode[i]);
-        if (relayMode[i] == 20) // manual mode
-        {
-            // relayMode[i] = 30;
-            digitalWrite(relayPins[i], HIGH);
-            cool[i] = "on";
-            modes[i] = "M";
-        }
-        else if (relayMode[i] == 30) // nothing set relay off
-        {
-            // relayMode[i] = 10;
-            digitalWrite(relayPins[i], LOW);
-            modes[i] = " ";
-            cool[i] = "off";
-        }
-        else if (relayMode[i] == 10)
-        {
-            modes[i] = "A";
-        }
+        //   Serial.print("relayMode " + String(i)) + " ";
+        // Serial.println(relayMode[i]);
         delay(300);
     }
     sensors.requestTemperatures(); // Request temperature readings
@@ -589,9 +411,7 @@ void loop()
     for (int i = 0; i < numRelays; i++)
     {
         int currentTemperature = sensors.getTempCByIndex(i);
-        //currentTemperature = random(100);
-        // desiredTemperatures[i] = random(100);
-         currentTankTemperatures[i] = (currentTemperature);
+        currentTankTemperatures[i] = (currentTemperature);
 
         // Update the current temperature display on Nextion for each tank
         myNex.writeNum("t" + String(i + 1) + "_akt.val", (currentTemperature));
@@ -603,17 +423,23 @@ void loop()
 
         if (currentTemperature > desiredTemperatures[i] && relayMode[i] == 10) // 10 = automatic
         {
-            // Temperature exceeds desired, turn on the relay for modeing or other actions
+            // Temperature exceeds desired, turn on the relay for cooling or other actions
             digitalWrite(relayPins[i], HIGH);
-            cool[i] = "on";
         }
-        else if (currentTemperature < desiredTemperatures[i] - hysteresis && relayMode[i] == 10)
+        else
         {
             digitalWrite(relayPins[i], LOW);
-            cool[i] = "off";
         }
         delay(300);
+        if (relayMode[i] == 20) // manual mode
+        {
+            digitalWrite(relayPins[i], HIGH);
+        }
+        else if (relayMode[i] == 30) // nothing set relay off
+        {
+            digitalWrite(relayPins[i], LOW);
+        }
     }
-    EEPROM.commit(); // only for the esp
-    delay(1000);     // Delay for a second before reading temperatures again
+    // EEPROM.commit();/ only for the esp
+    delay(1000); // Delay for a second before reading temperatures again
 }
