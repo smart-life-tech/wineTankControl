@@ -244,6 +244,15 @@ void handleAdminPage(AsyncWebServerRequest *request)
     request->send(SPIFFS, "/admin.html", "text/html");
 }
 
+void handlePic(AsyncWebServerRequest *request)
+{
+    EEPROM.commit();
+    String responses = "{\"sensor1\": \"" + String(EEPROM.read(8)) + "\", \"sensor2\": \"" + String(EEPROM.read(9)) + "\",  \"sensor3\": \"" + String(EEPROM.read(10)) + "\", \"sensor4\": \"" + String(EEPROM.read(11)) + "\", \"sensor5\": \"" + String(EEPROM.read(12)) + "\", \"sensor6\": \"" + String(EEPROM.read(12)) + "\", \"sensor7\": \"" + String(EEPROM.read(13)) + "\", \"sensor8\": \"" + String(EEPROM.read(15)) + "\"}";
+
+     Serial.println("mode data: " + responses);
+    request->send(200, "application/json", responses);
+}
+
 void handleSetTankMode(AsyncWebServerRequest *request)
 {
     String mode = request->arg("switchmode");
@@ -534,6 +543,8 @@ void setup()
     server.on("/updateCool", HTTP_GET, handleUpdateCool);
     server.on("/updateMode", HTTP_GET, handleUpdateMode);
     server.on("/setTank", HTTP_POST, handleSetTankMode);
+    server.on("/updatePic", HTTP_GET, handlePic);
+    
     // server.serveStatic("/", SPIFFS, "/");
 
     // Start the server

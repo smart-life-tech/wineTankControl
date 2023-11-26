@@ -193,6 +193,8 @@
 
             document.getElementById('neutralButton').classList.add('btn-secondary');
             document.getElementById('neutralButton').classList.remove('btn-primary');
+            document.getElementById('switchIdValue').innerText="A";
+            document.getElementById('switchIdValue').textContent="A";
         }
 
         // Function to set mode to Manual
@@ -205,6 +207,8 @@
 
             document.getElementById('neutralButton').classList.add('btn-secondary');
             document.getElementById('neutralButton').classList.remove('btn-primary');
+            document.getElementById('switchIdValue').innerText="M";
+            document.getElementById('switchIdValue').textContent="M";
         }
 
         // Function to set mode to Neutral
@@ -217,6 +221,8 @@
 
             document.getElementById('manualButton').classList.add('btn-secondary');
             document.getElementById('manualButton').classList.remove('btn-primary');
+            document.getElementById('switchIdValue').innerText="";
+            document.getElementById('switchIdValue').textContent="";
         }
 
         // Event listeners for the buttons
@@ -307,7 +313,7 @@
             xhr.open("POST", "/setTank", true);
             xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhr.send(`switchmode=${switchIdValue}&SensorValue=${sensorValue}&Tank=${sensorIdValue}`);
-            xhr.open("POST", "user.html", true);
+            //xhr.open("POST", "user.html", true);
             //alert('switch mode: ' + switchIdValue + '\nSensor Value: ' + sensorValue + '\nTank: ' + sensorIdValue);
             window.location.href = "user.html";
         });
