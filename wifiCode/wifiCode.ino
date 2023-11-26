@@ -143,7 +143,9 @@ void handleUpdateData(AsyncWebServerRequest *request)
         }
     }
     response += "}";
-    String responses = "{\"sensor1\": \"" + String(desiredTemperatures[0]) + "\", \"sensor2\": \"" + String(desiredTemperatures[1]) + "\",  \"sensor3\": \"" + String(desiredTemperatures[2]) + "\", \"sensor4\": \"" + String(desiredTemperatures[3]) + "\", \"sensor5\": \"" + String(desiredTemperatures[4]) + "\", \"sensor6\": \"" + String(desiredTemperatures[5]) + "\", \"sensor7\": \"" + String(desiredTemperatures[6]) + "\", \"sensor8\": \"" + String(desiredTemperatures[7]) + "\"}";
+    EEPROM.commit();
+    // String responses = "{\"sensor1\": \"" + String(desiredTemperatures[0]) + "\", \"sensor2\": \"" + String(desiredTemperatures[1]) + "\",  \"sensor3\": \"" + String(desiredTemperatures[2]) + "\", \"sensor4\": \"" + String(desiredTemperatures[3]) + "\", \"sensor5\": \"" + String(desiredTemperatures[4]) + "\", \"sensor6\": \"" + String(desiredTemperatures[5]) + "\", \"sensor7\": \"" + String(desiredTemperatures[6]) + "\", \"sensor8\": \"" + String(desiredTemperatures[7]) + "\"}";
+    String responses = "{\"sensor1\": \"" + String(byte(EEPROM.read(0))) + "\", \"sensor2\": \"" + String(byte(EEPROM.read(1))) + "\",  \"sensor3\": \"" + String(EEPROM.read(2)) + "\", \"sensor4\": \"" + String(EEPROM.read(3)) + "\", \"sensor5\": \"" + String(EEPROM.read(4)) + "\", \"sensor6\": \"" + String(EEPROM.read(5)) + "\", \"sensor7\": \"" + String(EEPROM.read(6)) + "\", \"sensor8\": \"" + String(EEPROM.read(7)) + "\"}";
 
     Serial.println("set data: " + responses);
     request->send(200, "application/json", responses);
@@ -253,25 +255,20 @@ void handleSetTankMode(AsyncWebServerRequest *request)
     Serial.println(sensor);
     Serial.print("tank ");
     Serial.println(tank);
-
+    int EEPROM_MODE_OFFSET = 8;
+    int EEPROM_SIZE = 64;
     // Ensure the EEPROM address is within the valid range
-    int eepromAddress = tank.toInt() - 1;
-    if (eepromAddress < 0 || eepromAddress >= 64)
+    int eepromAddress = tank.toInt();
+    if (eepromAddress >= 0 && eepromAddress <= EEPROM_SIZE)
     {
-        // Handle invalid EEPROM address
-        Serial.println("Invalid EEPROM address");
-    }
-    else
-    {
-        tank = String(eepromAddress);
-
-        int mm;
+        // Map mode values to numerical values
+        byte modeValue;
         if (mode == "M")
-            mm = 20;
+            modeValue = 20;
         else if (mode == "A")
-            mm = 10;
+            modeValue = 10;
         else
-            mm = 30;
+            modeValue = 30;
 
         myNex.writeNum("sleep", 0);
         delay(500);
@@ -279,19 +276,26 @@ void handleSetTankMode(AsyncWebServerRequest *request)
         delay(500);
         myNex.writeNum("t" + String(tank) + "_poz.val", (sensor.toInt()));
         delay(500);
-        myNex.writeNum("auto" + String(tank) + ".val", (mm));
+        myNex.writeNum("auto" + String(tank) + ".val", (modeValue));
 
-        EEPROM.write(eepromAddress, byte(sensor.toInt()));
-        EEPROM.write(eepromAddress + 8, byte(mm));
+        EEPROM.write(eepromAddress - 1, byte(sensor.toInt()));
+        EEPROM.write(eepromAddress + EEPROM_MODE_OFFSET - 1, modeValue);
+
         if (EEPROM.commit())
         {
-            Serial.print(byte(EEPROM.read(eepromAddress)));
-            Serial.println("  written success");
+            Serial.print(byte(EEPROM.read(eepromAddress - 1)));
+            Serial.print("  written success at address ");
+            Serial.println(eepromAddress - 1);
         }
         else
         {
             Serial.println("EEPROM write failed");
         }
+    }
+    else
+    {
+        // Handle invalid EEPROM address
+        Serial.println("Invalid EEPROM address");
     }
 }
 
