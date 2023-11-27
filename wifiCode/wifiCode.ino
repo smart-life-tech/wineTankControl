@@ -249,7 +249,7 @@ void handlePic(AsyncWebServerRequest *request)
     EEPROM.commit();
     String responses = "{\"sensor1\": \"" + String(EEPROM.read(8)) + "\", \"sensor2\": \"" + String(EEPROM.read(9)) + "\",  \"sensor3\": \"" + String(EEPROM.read(10)) + "\", \"sensor4\": \"" + String(EEPROM.read(11)) + "\", \"sensor5\": \"" + String(EEPROM.read(12)) + "\", \"sensor6\": \"" + String(EEPROM.read(12)) + "\", \"sensor7\": \"" + String(EEPROM.read(13)) + "\", \"sensor8\": \"" + String(EEPROM.read(15)) + "\"}";
 
-     Serial.println("mode data: " + responses);
+    Serial.println("mode data: " + responses);
     request->send(200, "application/json", responses);
 }
 
@@ -283,9 +283,9 @@ void handleSetTankMode(AsyncWebServerRequest *request)
         delay(500);
         myNex.writeStr("page 0");
         delay(500);
-        myNex.writeNum("t" + String(tank) + "_poz.val", (sensor.toInt()));
+        myNex.writeNum("t" + String(tank.toInt() - 1) + "_poz.val", (sensor.toInt()));
         delay(500);
-        myNex.writeNum("auto" + String(tank) + ".val", (modeValue));
+        myNex.writeNum("auto" + String(tank.toInt() - 1) + ".val", (modeValue));
 
         EEPROM.write(eepromAddress - 1, byte(sensor.toInt()));
         EEPROM.write(eepromAddress + EEPROM_MODE_OFFSET - 1, modeValue);
@@ -544,7 +544,7 @@ void setup()
     server.on("/updateMode", HTTP_GET, handleUpdateMode);
     server.on("/setTank", HTTP_POST, handleSetTankMode);
     server.on("/updatePic", HTTP_GET, handlePic);
-    
+
     // server.serveStatic("/", SPIFFS, "/");
 
     // Start the server
