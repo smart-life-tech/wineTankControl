@@ -174,7 +174,7 @@ void handleUpdateSet(AsyncWebServerRequest *request)
     response += "}";
     String responses = "{\"sensor1\": \"" + String(currentTankTemperatures[0]) + "\", \"sensor2\": \"" + String(currentTankTemperatures[1]) + "\",  \"sensor3\": \"" + String(currentTankTemperatures[2]) + "\", \"sensor4\": \"" + String(currentTankTemperatures[3]) + "\", \"sensor5\": \"" + String(currentTankTemperatures[4]) + "\", \"sensor6\": \"" + String(currentTankTemperatures[5]) + "\", \"sensor7\": \"" + String(currentTankTemperatures[6]) + "\", \"sensor8\": \"" + String(currentTankTemperatures[7]) + "\"}";
 
-    // Serial.println("current data: " + responses);
+    Serial.println("current data: " + responses);
     request->send(200, "application/json", responses);
 }
 
@@ -570,7 +570,7 @@ void loop()
         }
         delay(300);
     }
-    for (int i = 0; i < numRelays+1; i++)
+    for (int i = 0; i < numRelays; i++)
     {
         relayMode[i] = myNex.readNumber("auto" + String(i + 1) + ".val");
         if (relayMode[i] == 20) // manual mode
