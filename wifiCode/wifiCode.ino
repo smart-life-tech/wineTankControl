@@ -283,9 +283,9 @@ void handleSetTankMode(AsyncWebServerRequest *request)
         delay(500);
         myNex.writeStr("page 0");
         delay(500);
-        myNex.writeNum("t" + String(tank.toInt() - 1) + "_poz.val", (sensor.toInt()));
+        myNex.writeNum("t" + String(tank) + "_poz.val", (sensor.toInt()));
         delay(500);
-        myNex.writeNum("auto" + String(tank.toInt() - 1) + ".val", (modeValue));
+        myNex.writeNum("auto" + String(tank) + ".val", (modeValue));
 
         EEPROM.write(eepromAddress - 1, byte(sensor.toInt()));
         EEPROM.write(eepromAddress + EEPROM_MODE_OFFSET - 1, modeValue);
@@ -570,7 +570,7 @@ void loop()
         }
         delay(300);
     }
-    for (int i = 0; i < numRelays; i++)
+    for (int i = 0; i < numRelays+1; i++)
     {
         relayMode[i] = myNex.readNumber("auto" + String(i + 1) + ".val");
         if (relayMode[i] == 20) // manual mode
