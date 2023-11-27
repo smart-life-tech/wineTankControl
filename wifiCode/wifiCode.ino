@@ -295,6 +295,11 @@ void handleSetTankMode(AsyncWebServerRequest *request)
             Serial.print(byte(EEPROM.read(eepromAddress - 1)));
             Serial.print("  written success at address ");
             Serial.println(eepromAddress - 1);
+            for (int i = 0; i < 8; i++)
+            {
+                myNex.writeNum("t" + String(i + 1) + "_poz.val", byte(EEPROM.read(i)));
+                delay(200);
+            }
         }
         else
         {
@@ -566,7 +571,10 @@ void loop()
             Serial.print(desiredTemperatures[i]);
             Serial.println("°C");
             if (readTemp != EEPROM.read(i))
+            {
                 EEPROM.write(i, desiredTemperatures[i]);
+                EEPROM.commit(); // only for the esp
+            }
         }
         delay(300);
     }
@@ -576,17 +584,26 @@ void loop()
         if (relayMode[i] == 20) // manual mode
         {
             if (relayMode[i] != EEPROM.read(i + 8))
+            {
                 EEPROM.write(i + 8, relayMode[i]);
+                EEPROM.commit(); // only for the esp
+            }
         }
         else if (relayMode[i] == 30) // nothing set relay off
         {
             if (relayMode[i] != EEPROM.read(i + 8))
+            {
                 EEPROM.write(i + 8, relayMode[i]);
+                EEPROM.commit(); // only for the esp
+            }
         }
         else if (relayMode[i] == 10) // auto
         {
             if (relayMode[i] != EEPROM.read(i + 8))
+            {
                 EEPROM.write(i + 8, relayMode[i]);
+                EEPROM.commit(); // only for the esp
+            }
         }
     }
     // Serial.print("relayMode " + String(i)) + " ";
