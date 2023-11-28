@@ -283,8 +283,8 @@ void handleSetTankMode(AsyncWebServerRequest *request)
         delay(500);
         myNex.writeStr("page 0");
         delay(500);
-        myNex.writeNum("t" + String(tank) + "_poz.val", (sensor.toInt()));
-        delay(500);
+        //myNex.writeNum("t" + String(tank) + "_poz.val", (sensor.toInt()));
+        //delay(500);
         myNex.writeNum("auto" + String(tank) + ".val", (modeValue));
 
         EEPROM.write(eepromAddress - 1, byte(sensor.toInt()));
