@@ -283,9 +283,9 @@ void handleSetTankMode(AsyncWebServerRequest *request)
         delay(500);
         myNex.writeStr("page 0");
         delay(500);
-        //myNex.writeNum("t" + String(tank) + "_poz.val", (sensor.toInt()));
-        //delay(500);
-        myNex.writeNum("auto" + String(tank) + ".val", (modeValue));
+        // myNex.writeNum("t" + String(tank) + "_poz.val", (sensor.toInt()));
+        // delay(500);
+        // myNex.writeNum("auto" + String(tank) + ".val", (modeValue));
 
         EEPROM.write(eepromAddress - 1, byte(sensor.toInt()));
         EEPROM.write(eepromAddress + EEPROM_MODE_OFFSET - 1, modeValue);
@@ -298,6 +298,11 @@ void handleSetTankMode(AsyncWebServerRequest *request)
             for (int i = 0; i < 8; i++)
             {
                 myNex.writeNum("t" + String(i + 1) + "_poz.val", byte(EEPROM.read(i)));
+                delay(200);
+            }
+            for (int i = 0; i < 8; i++)
+            {
+                myNex.writeNum("t" + String(i + 1) + "_poz.val", byte(EEPROM.read(i+8)));
                 delay(200);
             }
         }
@@ -581,28 +586,37 @@ void loop()
     for (int i = 0; i < numRelays; i++)
     {
         relayMode[i] = myNex.readNumber("auto" + String(i + 1) + ".val");
-        if (relayMode[i] == 20) // manual mode
+        if (relayMode[i] < 500)
         {
             if (relayMode[i] != EEPROM.read(i + 8))
             {
                 EEPROM.write(i + 8, relayMode[i]);
-                EEPROM.commit(); // only for the esp
-            }
-        }
-        else if (relayMode[i] == 30) // nothing set relay off
-        {
-            if (relayMode[i] != EEPROM.read(i + 8))
-            {
-                EEPROM.write(i + 8, relayMode[i]);
-                EEPROM.commit(); // only for the esp
-            }
-        }
-        else if (relayMode[i] == 10) // auto
-        {
-            if (relayMode[i] != EEPROM.read(i + 8))
-            {
-                EEPROM.write(i + 8, relayMode[i]);
-                EEPROM.commit(); // only for the esp
+                EEPROM.commit(); // only for the es
+
+                if (relayMode[i] == 20) // manual mode
+                {
+                    if (relayMode[i] != EEPROM.read(i + 8))
+                    {
+                        EEPROM.write(i + 8, relayMode[i]);
+                        EEPROM.commit(); // only for the esp
+                    }
+                }
+                else if (relayMode[i] == 30) // nothing set relay off
+                {
+                    if (relayMode[i] != EEPROM.read(i + 8))
+                    {
+                        EEPROM.write(i + 8, relayMode[i]);
+                        EEPROM.commit(); // only for the esp
+                    }
+                }
+                else if (relayMode[i] == 10) // auto
+                {
+                    if (relayMode[i] != EEPROM.read(i + 8))
+                    {
+                        EEPROM.write(i + 8, relayMode[i]);
+                        EEPROM.commit(); // only for the esp
+                    }
+                }
             }
         }
     }
