@@ -247,7 +247,7 @@ void handleAdminPage(AsyncWebServerRequest *request)
 void handlePic(AsyncWebServerRequest *request)
 {
     EEPROM.commit();
-    String responses = "{\"sensor1\": \"" + String(EEPROM.read(8)) + "\", \"sensor2\": \"" + String(EEPROM.read(9)) + "\",  \"sensor3\": \"" + String(EEPROM.read(10)) + "\", \"sensor4\": \"" + String(EEPROM.read(11)) + "\", \"sensor5\": \"" + String(EEPROM.read(12)) + "\", \"sensor6\": \"" + String(EEPROM.read(12)) + "\", \"sensor7\": \"" + String(EEPROM.read(13)) + "\", \"sensor8\": \"" + String(EEPROM.read(15)) + "\"}";
+    String responses = "{\"sensor1\": \"" + String(EEPROM.read(8)) + "\", \"sensor2\": \"" + String(EEPROM.read(9)) + "\",  \"sensor3\": \"" + String(EEPROM.read(10)) + "\", \"sensor4\": \"" + String(EEPROM.read(11)) + "\", \"sensor5\": \"" + String(EEPROM.read(12)) + "\", \"sensor6\": \"" + String(EEPROM.read(13)) + "\", \"sensor7\": \"" + String(EEPROM.read(14)) + "\", \"sensor8\": \"" + String(EEPROM.read(15)) + "\"}";
 
     Serial.println("mode data: " + responses);
     request->send(200, "application/json", responses);
@@ -302,7 +302,7 @@ void handleSetTankMode(AsyncWebServerRequest *request)
             }
             for (int i = 0; i < 8; i++)
             {
-                myNex.writeNum("t" + String(i + 1) + "_poz.val", byte(EEPROM.read(i+8)));
+                myNex.writeNum("t" + String(i + 1) + "_poz.val", byte(EEPROM.read(i + 8)));
                 delay(200);
             }
         }
