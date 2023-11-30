@@ -658,6 +658,16 @@ void loop()
             digitalWrite(relayPins[i], LOW);
         }
     }
-    // EEPROM.commit();/ only for the esp
+    EEPROM.commit(); // only for the esp
+    for (int i = 0; i < 8; i++)
+    {
+        myNex.writeNum("t" + String(i + 1) + "_poz.val", byte(EEPROM.read(i)));
+        delay(200);
+    }
+    for (int i = 0; i < 8; i++)
+    {
+        myNex.writeNum("t" + String(i + 1) + "_poz.val", byte(EEPROM.read(i + 8)));
+        delay(200);
+    }
     delay(1000); // Delay for a second before reading temperatures again
 }
